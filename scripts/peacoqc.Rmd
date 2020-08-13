@@ -18,7 +18,7 @@ library(flowCore)
 base_path <- "D:/Experiment_data/weizmann/EhV/201"
 channels <- c("IntensityMCTMRlogicle", "IntensityMCCy5logicle", "IntensityMCDAPIlogicle")
 
-timepoints <- c("T0", "T4", "T5", "T6", "T7")
+timepoints <- c("T0", "T2", "T3", "T4", "T5", "T6", "T7")
 replicates <- c("R1", "R2", "R3")
 
 grid <- expand.grid(timepoints, replicates)
