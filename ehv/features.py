@@ -13,6 +13,8 @@ import logging
 import matplotlib.pyplot as plt
 from importlib import reload
 
+numpy.random.seed(42)
+
 # Cell
 
 from ehv import load

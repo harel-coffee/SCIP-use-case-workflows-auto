@@ -21,7 +21,7 @@ def load_raw_ideas(tree_path, load_labels=False):
     data = []
     columns = set()
 
-    for timepoint_path in os.listdir(tree_path):
+    for timepoint_path in [p for p in os.listdir(tree_path) if os.path.isdir(os.path.join(tree_path, p))]:
         for replicate_path in os.listdir(os.path.join(tree_path, timepoint_path)):
             path = os.path.join(tree_path, timepoint_path, replicate_path)
 

@@ -7,14 +7,21 @@ index = {"load_raw_ideas": "1a_load.ipynb",
          "to_fcs": "1b_export.ipynb",
          "apply_logicle": "2a_fluorescence_intensity_preprocessing.ipynb",
          "umap_per_set": "2b_other_features_preprocessing.ipynb",
-         "outliers_per_set": "2b_other_features_preprocessing.ipynb"}
+         "outliers_per_set": "2b_other_features_preprocessing.ipynb",
+         "compute_metrics": "4a_mrna_content_regression.ipynb",
+         "metric_funcs": "4a_mrna_content_regression.ipynb",
+         "tfb": "4b_mrna_content_regression_with_GP.ipynb",
+         "tfd": "4b_mrna_content_regression_with_GP.ipynb",
+         "tfk": "4b_mrna_content_regression_with_GP.ipynb"}
 
 modules = ["load.py",
            "export.py",
            "fluorescence_intensity.py",
            "features.py",
-           "mrna_content.py",
-           "umap.py"]
+           "kmeans.py",
+           "umap.py",
+           "mrna_content_regression.py",
+           "mrna_content.py"]
 
 doc_url = "https://mlippeve.github.io/ehv/"
 
