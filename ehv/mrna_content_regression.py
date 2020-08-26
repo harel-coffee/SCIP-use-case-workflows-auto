@@ -34,6 +34,7 @@ import sklearn.neural_network
 import optuna
 import click
 import xgboost
+from multiprocessing import cpu_count
 
 reload(core)
 
@@ -108,7 +109,7 @@ def define_xgb(trial):
 def define_sgd(trial):
     learning_rate = trial.suggest_categorical("learning_rate", ["constant", "optimal"])
     if learning_rate == "constant":
-        eta0 = trial.suggest_float("eta0")
+        eta0 = trial.suggest_float('eta0', 1e-4, 1e-1, log=True)
     else:
         eta0 = 0.01 # default
 
@@ -117,7 +118,7 @@ def define_sgd(trial):
         fit_intercept = False,
         learning_rate = learning_rate,
         eta0 = trial.suggest_float('eta0', 1e-4, 1e-1, log=True),
-        alpa = trial.suggest_float("alpha")
+        alpha = trial.suggest_float("alpha", 0, 1)
     )
 
 definition_dict = {
@@ -157,7 +158,7 @@ def objective(trial, inner_fold, funcs, X, y, model_names):
 
 def nested_cross_validation_with_hyperparam_optimization(
         df:pandas.DataFrame, target:pandas.Series, model_names:str,
-        optuna_storage:str, optuna_n_trials:int, optuna_study_name_fmt:str
+        optuna_storage:str, optuna_n_trials:int, optuna_study_name_fmt:str, optuna_n_jobs:int
     ):
 
     outer_fold, inner_folds = load(core.FOLDS)
@@ -179,13 +180,13 @@ def nested_cross_validation_with_hyperparam_optimization(
             # select best parameters for model using Optuna
             study = optuna.create_study(study_name=optuna_study_name_fmt % (i, j), direction='minimize', storage=optuna_storage, load_if_exists=True)
             study.set_user_attr("cross-validation splits", core.FOLDS)
-            study.optimize(fold_objective, n_trials=optuna_n_trials)
+            study.optimize(fold_objective, n_trials=optuna_n_trials, n_jobs=optuna_n_jobs)
 
             logging.getLogger(__name__).info(f"Retraining on outer fold {i}, inner fold repeat {j+1}/{len(inner_folds)}")
 
             # retrain model with best parameters on train+val data
-            frozen_trial = study.best_trial
-            model = definition_dict[frozen_trial.params["model_name"]](frozen_trial)
+            fixed_trial = optuna.trial.FixedTrial(study.best_params)
+            model = definition_dict[fixed_trial.params["model_name"]](fixed_trial)
 
             model.fit(outer_func[0](X), outer_func[1](y))
 
@@ -211,9 +212,13 @@ def nested_cross_validation_with_hyperparam_optimization(
 @click.option("--config", "-c", type=click.Path(dir_okay=False, exists=True), default="../config_cn1346.yml")
 @click.option("--optuna-n-trials", "-ot", type=click.IntRange(0), default=5)
 @click.option("--optuna-study-name", "-on", type=str, default=5)
+@click.option("--optuna-n-jobs", "-oj", type=int, default=-1)
 @click.option("--overwrite", "-w", is_flag=True, default=False)
 @click.option("--verbose", "-v", is_flag=True, default=False)
-def nested_cross_validation_with_hyperparam_optimization_command(target_col, storage_path, model, config, optuna_n_trials, optuna_study_name, overwrite, verbose):
+def nested_cross_validation_with_hyperparam_optimization_command(target_col, storage_path, model, config, optuna_n_trials, optuna_study_name, optuna_n_jobs, overwrite, verbose):
+
+    if optuna_n_jobs == -1:
+        optuna_n_jobs = cpu_count()
 
     core.load_config(config)
 
@@ -237,6 +242,6 @@ def nested_cross_validation_with_hyperparam_optimization_command(target_col, sto
 
     optuna_study_name_fmt = optuna_study_name + "_%d_%d"
 
-    scores = nested_cross_validation_with_hyperparam_optimization(df, target, model, optuna_storage, optuna_n_trials, optuna_study_name_fmt)
+    scores = nested_cross_validation_with_hyperparam_optimization(df, target, model, optuna_storage, optuna_n_trials, optuna_study_name_fmt, optuna_n_jobs)
 
     dump(scores, os.path.join(storage_path, "scores.dat"))
