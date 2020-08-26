@@ -16,11 +16,14 @@ index = {"load_config": "00_core.ipynb",
          "tfk": "4b_mrna_content_regression_with_GP.ipynb",
          "standardizer": "4c_optimal_mrna_content_regression.ipynb",
          "preprocess_funcs": "4c_optimal_mrna_content_regression.ipynb",
+         "define_dummy": "4c_optimal_mrna_content_regression.ipynb",
          "define_mlp": "4c_optimal_mrna_content_regression.ipynb",
          "define_xgb": "4c_optimal_mrna_content_regression.ipynb",
          "define_sgd": "4c_optimal_mrna_content_regression.ipynb",
          "definition_dict": "4c_optimal_mrna_content_regression.ipynb",
-         "nested_cross_validation": "4c_optimal_mrna_content_regression.ipynb"}
+         "objective": "4c_optimal_mrna_content_regression.ipynb",
+         "nested_cross_validation_with_hyperparam_optimization": "4c_optimal_mrna_content_regression.ipynb",
+         "nested_cross_validation_with_hyperparam_optimization_command": "4c_optimal_mrna_content_regression.ipynb"}
 
 modules = ["core.py",
            "load.py",
@@ -30,7 +33,7 @@ modules = ["core.py",
            "kmeans.py",
            "umap.py",
            "mrna_content_regression.py",
-           "mrna_content.py"]
+           "mrna_content_regression_with_gp.py"]
 
 doc_url = "https://mlippeve.github.io/ehv/"
 
