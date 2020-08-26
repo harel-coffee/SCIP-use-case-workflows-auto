@@ -2,7 +2,8 @@
 
 __all__ = ["index", "modules", "custom_doc_links", "git_url"]
 
-index = {"load_raw_ideas": "1a_load.ipynb",
+index = {"load_config": "00_core.ipynb",
+         "load_raw_ideas": "1a_load.ipynb",
          "remove_unwanted_features": "1a_load.ipynb",
          "to_fcs": "1b_export.ipynb",
          "apply_logicle": "2a_fluorescence_intensity_preprocessing.ipynb",
@@ -12,9 +13,17 @@ index = {"load_raw_ideas": "1a_load.ipynb",
          "metric_funcs": "4a_mrna_content_regression.ipynb",
          "tfb": "4b_mrna_content_regression_with_GP.ipynb",
          "tfd": "4b_mrna_content_regression_with_GP.ipynb",
-         "tfk": "4b_mrna_content_regression_with_GP.ipynb"}
+         "tfk": "4b_mrna_content_regression_with_GP.ipynb",
+         "standardizer": "4c_optimal_mrna_content_regression.ipynb",
+         "preprocess_funcs": "4c_optimal_mrna_content_regression.ipynb",
+         "define_mlp": "4c_optimal_mrna_content_regression.ipynb",
+         "define_xgb": "4c_optimal_mrna_content_regression.ipynb",
+         "define_sgd": "4c_optimal_mrna_content_regression.ipynb",
+         "definition_dict": "4c_optimal_mrna_content_regression.ipynb",
+         "nested_cross_validation": "4c_optimal_mrna_content_regression.ipynb"}
 
-modules = ["load.py",
+modules = ["core.py",
+           "load.py",
            "export.py",
            "fluorescence_intensity.py",
            "features.py",

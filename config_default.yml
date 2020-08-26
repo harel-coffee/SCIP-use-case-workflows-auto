@@ -1,0 +1,6 @@
+DATA_ROOT: .
+DATA_EHV201: ./201
+DATA_EHVCTRL: ./control
+FOLDS: ./201/folds.dat
+FCS_FLUOR: ./201/aggregates/fluor.fcs
+FCS_NONINTENSITY: ./201/aggregates/non_intensity.fcs"
