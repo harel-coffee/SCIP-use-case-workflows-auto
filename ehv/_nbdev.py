@@ -22,6 +22,7 @@ index = {"load_config": "00_core.ipynb",
          "define_sgd": "4c_optimal_mrna_content_regression.ipynb",
          "definition_dict": "4c_optimal_mrna_content_regression.ipynb",
          "objective": "4c_optimal_mrna_content_regression.ipynb",
+         "run_optimization": "4c_optimal_mrna_content_regression.ipynb",
          "nested_cross_validation_with_hyperparam_optimization": "4c_optimal_mrna_content_regression.ipynb",
          "nested_cross_validation_with_hyperparam_optimization_command": "4c_optimal_mrna_content_regression.ipynb"}
 
