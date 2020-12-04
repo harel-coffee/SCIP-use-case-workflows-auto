@@ -145,3 +145,4 @@ checklink/cookies.txt
 *.Rhistory
 *.txt
 *.yml
+*/data
