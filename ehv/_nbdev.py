@@ -3,14 +3,17 @@
 __all__ = ["index", "modules", "custom_doc_links", "git_url"]
 
 index = {"load_config": "00_core.ipynb",
+         "load_from_sqlite_db": "00_core.ipynb",
+         "add_gating_table": "00_core.ipynb",
+         "add_gate": "00_core.ipynb",
          "load_raw_ideas": "1a_load.ipynb",
          "remove_unwanted_features": "1a_load.ipynb",
          "to_fcs": "1b_export.ipynb",
          "standardizer": "1c_generate_splits.ipynb",
          "preprocess_funcs": "1c_generate_splits.ipynb",
-         "apply_logicle": "2a_fluorescence_intensity_preprocessing.ipynb",
-         "umap_per_set": "2b_other_features_preprocessing.ipynb",
-         "outliers_per_set": "2b_other_features_preprocessing.ipynb",
+         "apply_logicle": "2b_fluorescence_intensity_preprocessing.ipynb",
+         "umap_per_set": "2c_other_features_preprocessing.ipynb",
+         "outliers_per_set": "2c_other_features_preprocessing.ipynb",
          "run_lasso_optimization": "4a_mrna_content_regression.ipynb",
          "run_ridge_optimization": "4a_mrna_content_regression.ipynb",
          "compute_metrics": "4a_mrna_content_regression.ipynb",
@@ -38,7 +41,8 @@ modules = ["core.py",
            "umap.py",
            "basic_mrna_content_regression.py",
            "mrna_content_regression_with_gp.py",
-           "mrna_content_regression.py"]
+           "mrna_content_regression.py",
+           "None.py"]
 
 doc_url = "https://mlippeve.github.io/ehv/"
 
