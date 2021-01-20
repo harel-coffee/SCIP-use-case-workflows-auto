@@ -1,0 +1,17 @@
+FROM python:slim-buster
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY README.md .
+COPY setup.py .
+COPY settings.ini .
+COPY ehv/ ./ehv
+RUN pip install -e .
+
+EXPOSE 8888
+
+CMD ["jupyter", "lab", "--no-browser", "--allow-root", "--port=8888", "--ip=0.0.0.0"]
+
