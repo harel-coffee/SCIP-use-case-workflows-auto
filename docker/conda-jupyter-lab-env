@@ -1,0 +1,25 @@
+# https://pythonspeed.com/articles/activate-conda-dockerfile/
+
+FROM continuumio/miniconda3
+
+WORKDIR /app
+
+# Create the environment:
+COPY environment.yml .
+RUN conda env create -f environment.yml
+
+# Make RUN commands use the new environment:
+SHELL ["conda", "run", "-n", "env", "/bin/bash", "-c"]
+
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY README.md .
+COPY setup.py .
+COPY settings.ini .
+COPY ehv/ ./ehv
+RUN pip install -e .
+
+EXPOSE 8888
+
+CMD ["conda", "run", "-n", "env", "--cwd", "/app", "--no-capture-output", "jupyter", "lab", "--no-browser", "--allow-root", "--port=8888", "--ip=0.0.0.0"]
