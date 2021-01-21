@@ -6,8 +6,10 @@ index = {"load_config": "00_core.ipynb",
          "load_from_sqlite_db": "00_core.ipynb",
          "add_gating_table": "00_core.ipynb",
          "add_gate": "00_core.ipynb",
-         "load_raw_ideas": "1a_load.ipynb",
+         "load_raw_ideas_tree": "1a_load.ipynb",
+         "load_raw_ideas_dir": "1a_load.ipynb",
          "remove_unwanted_features": "1a_load.ipynb",
+         "tag_columns": "1a_load.ipynb",
          "to_fcs": "1b_export.ipynb",
          "standardizer": "1c_generate_splits.ipynb",
          "preprocess_funcs": "1c_generate_splits.ipynb",
@@ -35,14 +37,14 @@ modules = ["core.py",
            "load.py",
            "export.py",
            "splits.py",
+           "pop_analysis.py",
            "fluorescence_intensity.py",
            "features.py",
            "kmeans.py",
            "umap.py",
            "basic_mrna_content_regression.py",
            "mrna_content_regression_with_gp.py",
-           "mrna_content_regression.py",
-           "None.py"]
+           "mrna_content_regression.py"]
 
 doc_url = "https://mlippeve.github.io/ehv/"
 

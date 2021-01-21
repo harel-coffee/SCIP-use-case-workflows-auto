@@ -3,7 +3,6 @@
 __all__ = ['load_config', 'load_from_sqlite_db', 'add_gating_table', 'add_gate']
 
 # Cell
-# export
 
 import pandas
 import os
@@ -65,10 +64,10 @@ def add_gating_table(path):
 
 def add_gate(path, name, df):
     with sqlite3.connect(path) as con:
-        if name not in [i[1] for i in con.execute('PRAGMA table_info(gates)')]:
-            con.execute("ALTER TABLE gates ADD COLUMN %s INTEGER DEFAULT 0" % name)
+        if "meta_"+name not in [i[1] for i in con.execute('PRAGMA table_info(gates)')]:
+            con.execute("ALTER TABLE gates ADD COLUMN meta_%s INTEGER DEFAULT 0" % name)
         return con.executemany(f"""
-            INSERT INTO gates (meta_id, meta_file, %s) VALUES (:meta_id, :meta_file, 1)
+            INSERT INTO gates (meta_id, meta_file, meta_%s) VALUES (:meta_id, :meta_file, 1)
             ON CONFLICT (meta_id, meta_file)
-            DO UPDATE SET %s = 1
+            DO UPDATE SET meta_%s = 1
         """ % (name, name), df[["meta_id", "meta_file"]].to_dict(orient="records"))

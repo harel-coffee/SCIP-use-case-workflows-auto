@@ -2,6 +2,8 @@ FROM python:slim-buster
 
 WORKDIR /app
 
+RUN pip install numpy scipy
+
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
