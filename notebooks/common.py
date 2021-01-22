@@ -8,6 +8,7 @@ import logging
 import matplotlib.pyplot as plt
 from importlib import reload
 from ehv import core
+from joblib import load, dump
 
 plt.rcParams['figure.facecolor'] = 'white'
 
