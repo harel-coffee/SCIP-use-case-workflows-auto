@@ -2,11 +2,13 @@
 
 title: Core module
 
+
 keywords: fastai
 sidebar: home_sidebar
 
 summary: "API details."
 description: "API details."
+nb_path: "notebooks/00_core.ipynb"
 ---
 <!--
 
@@ -48,6 +50,13 @@ description: "API details."
 </div>
     {% endraw %}
 
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Config-loading">Config loading<a class="anchor-link" href="#Config-loading"> </a></h1><p>(deprecated in favor of containerization)</p>
+
+</div>
+</div>
+</div>
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -59,9 +68,169 @@ description: "API details."
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="load_config" class="doc_header"><code>load_config</code><a href="https://github.com/mlippeve/ehv/tree/master/ehv/core.py#L25" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>load_config</code>(<strong><code>config_file</code></strong>)</p>
+<h4 id="load_config" class="doc_header"><code>load_config</code><a href="https://github.com/mlippeve/ehv/tree/master/ehv/core.py#L29" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>load_config</code>(<strong><code>config_file</code></strong>)</p>
 </blockquote>
 
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">load_config</span><span class="p">(</span><span class="s2">&quot;../config_cn1346.yml&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Utility-function-for-saving-gating-in-SQLite-database">Utility function for saving gating in SQLite database<a class="anchor-link" href="#Utility-function-for-saving-gating-in-SQLite-database"> </a></h1>
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="load_from_sqlite_db" class="doc_header"><code>load_from_sqlite_db</code><a href="https://github.com/mlippeve/ehv/tree/master/ehv/core.py#L37" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>load_from_sqlite_db</code>(<strong><code>path</code></strong>, <strong><code>gate</code></strong>=<em><code>None</code></em>)</p>
+</blockquote>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="add_gating_table" class="doc_header"><code>add_gating_table</code><a href="https://github.com/mlippeve/ehv/tree/master/ehv/core.py#L58" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>add_gating_table</code>(<strong><code>path</code></strong>)</p>
+</blockquote>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="add_gate" class="doc_header"><code>add_gate</code><a href="https://github.com/mlippeve/ehv/tree/master/ehv/core.py#L68" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>add_gate</code>(<strong><code>path</code></strong>, <strong><code>name</code></strong>, <strong><code>df</code></strong>)</p>
+</blockquote>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">c</span> <span class="o">=</span> <span class="n">add_gating_table</span><span class="p">(</span><span class="s2">&quot;data/sc_gate_allCtrl.sqlite3&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">c</span> <span class="o">=</span> <span class="n">add_gate</span><span class="p">(</span><span class="s2">&quot;data/sc_gate_allCtrl.sqlite3&quot;</span><span class="p">,</span> <span class="s2">&quot;gate1&quot;</span><span class="p">,</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([(</span><span class="s2">&quot;C3_T5_69.cif&quot;</span><span class="p">,</span> <span class="s2">&quot;0&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;C3_T5_69.cif&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;meta_file&quot;</span><span class="p">,</span> <span class="s2">&quot;meta_id&quot;</span><span class="p">]))</span>
+<span class="n">c</span><span class="o">.</span><span class="n">rowcount</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>2</pre>
 </div>
 
 </div>
@@ -79,12 +248,407 @@ description: "API details."
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">load_config</span><span class="p">(</span><span class="s2">&quot;../config_cp0293.yml&quot;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">c</span> <span class="o">=</span> <span class="n">add_gate</span><span class="p">(</span><span class="s2">&quot;data/sc_gate_allCtrl.sqlite3&quot;</span><span class="p">,</span> <span class="s2">&quot;gate2&quot;</span><span class="p">,</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([(</span><span class="s2">&quot;C3_T5_69.cif&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">)],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;meta_file&quot;</span><span class="p">,</span> <span class="s2">&quot;meta_id&quot;</span><span class="p">]))</span>
+<span class="n">c</span><span class="o">.</span><span class="n">rowcount</span>
 </pre></div>
 
     </div>
 </div>
 </div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>1</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">load_from_sqlite_db</span><span class="p">(</span><span class="s2">&quot;data/sc_gate_allCtrl.sqlite3&quot;</span><span class="p">,</span> <span class="s2">&quot;gate1&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>feat_min_0</th>
+      <th>feat_haralickEntropyHORIZONTAL_5</th>
+      <th>feat_min_6</th>
+      <th>feat_haralickEntropyHORIZONTAL_6</th>
+      <th>feat_min_3</th>
+      <th>feat_min_5</th>
+      <th>feat_haralickEntropyVERTICAL_6</th>
+      <th>feat_haralickEntropyHORIZONTAL_0</th>
+      <th>feat_haralickEntropyVERTICAL_5</th>
+      <th>feat_haralickEntropyHORIZONTAL_3</th>
+      <th>...</th>
+      <th>feat_haralickContrastHORIZONTAL_0</th>
+      <th>feat_max_5</th>
+      <th>feat_tamuraContrast_10</th>
+      <th>gate1</th>
+      <th>gate2</th>
+      <th>meta_gate1</th>
+      <th>meta_gate2</th>
+      <th>meta_replicate</th>
+      <th>meta_timepoint</th>
+      <th>meta_fiji</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>745</td>
+      <td>4.661803</td>
+      <td>37</td>
+      <td>4.873306</td>
+      <td>25</td>
+      <td>26</td>
+      <td>4.891705</td>
+      <td>4.957409</td>
+      <td>4.918806</td>
+      <td>3.581225</td>
+      <td>...</td>
+      <td>332.692771</td>
+      <td>81</td>
+      <td>24.374255</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>C3</td>
+      <td>5</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>671</td>
+      <td>4.319667</td>
+      <td>31</td>
+      <td>5.463857</td>
+      <td>23</td>
+      <td>25</td>
+      <td>5.452105</td>
+      <td>5.543997</td>
+      <td>4.681868</td>
+      <td>4.285808</td>
+      <td>...</td>
+      <td>170.860215</td>
+      <td>297</td>
+      <td>56.560989</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>C3</td>
+      <td>5</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>756</td>
+      <td>4.778958</td>
+      <td>40</td>
+      <td>4.661738</td>
+      <td>23</td>
+      <td>24</td>
+      <td>4.695771</td>
+      <td>4.985134</td>
+      <td>4.886545</td>
+      <td>4.183226</td>
+      <td>...</td>
+      <td>366.601307</td>
+      <td>101</td>
+      <td>24.822255</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>C3</td>
+      <td>5</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>754</td>
+      <td>4.494071</td>
+      <td>37</td>
+      <td>4.487347</td>
+      <td>27</td>
+      <td>25</td>
+      <td>4.482653</td>
+      <td>4.703664</td>
+      <td>4.735585</td>
+      <td>3.750785</td>
+      <td>...</td>
+      <td>288.737226</td>
+      <td>126</td>
+      <td>28.672292</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>C3</td>
+      <td>5</td>
+      <td>31</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>745</td>
+      <td>4.376188</td>
+      <td>32</td>
+      <td>4.594803</td>
+      <td>24</td>
+      <td>25</td>
+      <td>4.545932</td>
+      <td>4.827261</td>
+      <td>4.602216</td>
+      <td>3.882469</td>
+      <td>...</td>
+      <td>276.639706</td>
+      <td>177</td>
+      <td>34.724980</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>C3</td>
+      <td>5</td>
+      <td>19</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>156106</th>
+      <td>738</td>
+      <td>3.754506</td>
+      <td>44</td>
+      <td>5.026107</td>
+      <td>16</td>
+      <td>26</td>
+      <td>4.984516</td>
+      <td>5.044493</td>
+      <td>4.267118</td>
+      <td>4.603163</td>
+      <td>...</td>
+      <td>295.134715</td>
+      <td>286</td>
+      <td>28.620163</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>C2</td>
+      <td>4</td>
+      <td>39807</td>
+    </tr>
+    <tr>
+      <th>156107</th>
+      <td>741</td>
+      <td>4.060872</td>
+      <td>51</td>
+      <td>4.891718</td>
+      <td>10</td>
+      <td>26</td>
+      <td>4.803898</td>
+      <td>4.996986</td>
+      <td>4.581849</td>
+      <td>4.558410</td>
+      <td>...</td>
+      <td>307.300613</td>
+      <td>172</td>
+      <td>24.805000</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>C2</td>
+      <td>4</td>
+      <td>39681</td>
+    </tr>
+    <tr>
+      <th>156108</th>
+      <td>750</td>
+      <td>4.423048</td>
+      <td>35</td>
+      <td>5.088294</td>
+      <td>28</td>
+      <td>25</td>
+      <td>5.145053</td>
+      <td>4.951453</td>
+      <td>4.772655</td>
+      <td>3.532873</td>
+      <td>...</td>
+      <td>239.284211</td>
+      <td>214</td>
+      <td>9.371372</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>C2</td>
+      <td>4</td>
+      <td>39981</td>
+    </tr>
+    <tr>
+      <th>156109</th>
+      <td>748</td>
+      <td>3.541067</td>
+      <td>46</td>
+      <td>5.032592</td>
+      <td>8</td>
+      <td>25</td>
+      <td>5.165129</td>
+      <td>5.198609</td>
+      <td>4.111942</td>
+      <td>4.908994</td>
+      <td>...</td>
+      <td>368.654378</td>
+      <td>258</td>
+      <td>32.217527</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>C2</td>
+      <td>4</td>
+      <td>39579</td>
+    </tr>
+    <tr>
+      <th>156110</th>
+      <td>723</td>
+      <td>4.266570</td>
+      <td>58</td>
+      <td>4.948875</td>
+      <td>10</td>
+      <td>25</td>
+      <td>5.027677</td>
+      <td>5.014042</td>
+      <td>4.825096</td>
+      <td>4.677031</td>
+      <td>...</td>
+      <td>362.624277</td>
+      <td>139</td>
+      <td>27.243621</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>C2</td>
+      <td>4</td>
+      <td>39781</td>
+    </tr>
+  </tbody>
+</table>
+<p>156111 rows × 110 columns</p>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="UMAP-utility-functions">UMAP utility functions<a class="anchor-link" href="#UMAP-utility-functions"> </a></h1>
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="do_umap" class="doc_header"><code>do_umap</code><a href="https://github.com/mlippeve/ehv/tree/master/ehv/core.py#L79" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>do_umap</code>(<strong><code>name</code></strong>, <strong><code>data</code></strong>, <strong>**<code>umap_args</code></strong>)</p>
+</blockquote>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
 
 </div>
     {% endraw %}

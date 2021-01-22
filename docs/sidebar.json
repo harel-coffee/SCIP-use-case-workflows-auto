@@ -1,10 +1,20 @@
 {
-  "Notebook": {
-    "Export to modules": "/export",
-    "Convert to html": "/export2html",
-    "Show doc": "/showdoc",
-    "Test functions": "/test",
-    "Core functions": "/core",
-    "Command line functions": "/cli"
+  "ehv": {
+    "Overview": "/",
+    "Core module": "core.html",
+    "Load": "load.html",
+    "Export": "export.html",
+    "Intro": "generate_splits.html",
+    "Cell count analysis": "cell_count_analysis.html",
+    "Replicate focus- and single-cell gate from IDEAS using the SCI feature extraction tool": "QC_features_ij.html",
+    "Fluorescence intensity": "fluorescence_intensity_preprocessing.html",
+    "Features": "other_features_preprocessing.html",
+    "Outlier analysis with UMAP": "outlier_analysis_with_umap.html",
+    "K-means": "kmeans.html",
+    "UMAP Dimensionality reduction": "umap_dimensionality_reduction.html",
+    "mRNA content regression": "mrna_content_regression.html",
+    "mRNA content regression with Gaussian Processes": "mrna_content_regression_with_GP.html",
+    "Finding the optimal model for mRNA content regression using Optuna": "optimal_mrna_content_regression.html",
+    "Hyper-paramter optimization experiments": "hyper_parameter_optimization_analysis.html"
   }
 }

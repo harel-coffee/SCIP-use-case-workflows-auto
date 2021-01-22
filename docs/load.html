@@ -2,11 +2,13 @@
 
 title: Load
 
+
 keywords: fastai
 sidebar: home_sidebar
 
 summary: "API details."
 description: "API details."
+nb_path: "notebooks/1a_load.ipynb"
 ---
 <!--
 
@@ -20,6 +22,13 @@ description: "API details."
 
 <div class="container" id="notebook-container">
         
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -68,13 +77,6 @@ description: "API details."
     
 <div class="cell border-box-sizing code_cell rendered">
 
-</div>
-    {% endraw %}
-
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
 <div class="output_wrapper">
 <div class="output">
 
@@ -82,7 +84,7 @@ description: "API details."
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="load_raw_ideas" class="doc_header"><code>load_raw_ideas</code><a href="https://github.com/mlippeve/ehv/tree/master/ehv/load.py#L19" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>load_raw_ideas</code>(<strong><code>tree_path</code></strong>, <strong><code>load_labels</code></strong>=<em><code>False</code></em>)</p>
+<h4 id="load_raw_ideas_tree" class="doc_header"><code>load_raw_ideas_tree</code><a href="https://github.com/mlippeve/ehv/tree/master/ehv/load.py#L20" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>load_raw_ideas_tree</code>(<strong><code>tree_path</code></strong>, <strong><code>load_labels</code></strong>=<em><code>False</code></em>)</p>
 </blockquote>
 
 </div>
@@ -91,6 +93,13 @@ description: "API details."
 
 </div>
 </div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
 
 </div>
     {% endraw %}
@@ -157,26 +166,6 @@ INFO:root:Loading dir D:/Experiment_data/weizmann/EhV/control\T7\R3
 </div>
     {% endraw %}
 
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Unwanted-features">Unwanted features<a class="anchor-link" href="#Unwanted-features"> </a></h2>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Raw-features">Raw features<a class="anchor-link" href="#Raw-features"> </a></h3><p>Contain values that are not corrected for camera background intensity.</p>
-
-</div>
-</div>
-</div>
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-</div>
-    {% endraw %}
-
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
@@ -188,9 +177,201 @@ INFO:root:Loading dir D:/Experiment_data/weizmann/EhV/control\T7\R3
 
 
 <div class="output_markdown rendered_html output_subarea ">
-<h4 id="remove_unwanted_features" class="doc_header"><code>remove_unwanted_features</code><a href="https://github.com/mlippeve/ehv/tree/master/ehv/load.py#L58" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>remove_unwanted_features</code>(<strong><code>df</code></strong>)</p>
+<h4 id="load_raw_ideas_dir" class="doc_header"><code>load_raw_ideas_dir</code><a href="https://github.com/mlippeve/ehv/tree/master/ehv/load.py#L59" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>load_raw_ideas_dir</code>(<strong><code>path</code></strong>, <strong><code>feature_postfix</code></strong>, <strong><code>label_postfixes</code></strong>=<em><code>[]</code></em>)</p>
 </blockquote>
 
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">load_raw_ideas_dir</span><span class="p">(</span><span class="s2">&quot;/data/weizmann/EhV/high_time_res&quot;</span><span class="p">,</span> <span class="s2">&quot;ALL&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;COI&quot;</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>INFO:__main__:/data/weizmann/EhV/high_time_res/Ctrl/C1_T0_49.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Ctrl/C1_T11_55.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Ctrl/C1_T13_56.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Ctrl/C1_T15_57.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Ctrl/C1_T3_50.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Ctrl/C1_T4_51.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Ctrl/C1_T5_52.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Ctrl/C1_T6_53.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Ctrl/C1_T7_54.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Ctrl/C2_T0_58.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Ctrl/C2_T11_64.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Ctrl/C2_T13_65.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Ctrl/C2_T3_59.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Ctrl/C2_T4_60.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Ctrl/C2_T5_61.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Ctrl/C2_T6_62.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Ctrl/C2_T7_63.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Ctrl/C3_T0_66.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Ctrl/C3_T11_72.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Ctrl/C3_T13_73.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Ctrl/C3_T3_67.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Ctrl/C3_T4_68.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Ctrl/C3_T5_69.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Ctrl/C3_T6_70.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Ctrl/C3_T7_71.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H1_T0_1.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H1_T11_11.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H1_T12_12.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H1_T13_13.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H1_T14_14.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H1_T15_15.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H1_T16_16.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H1_T1_2.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H1_T2_3.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H1_T3_4.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H1_T4_5.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H1_T5_6.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H1_T6_7.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H1_T7_8.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H1_T8_9.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H1_T9_10.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H2_T11_26.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H2_T12_27.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H2_T13_28.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H2_T14_29.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H2_T15_30.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H2_T16_31.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H2_T1_17.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H2_T2_18.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H2_T3_19.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H2_T4_20.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H2_T5_21.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H2_T6_22.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H2_T7_23.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H2_T8_24.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H2_T9_25.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H3_T0_32.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H3_T11_42.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H3_T12_43.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H3_T13_44.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H3_T14_45.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H3_T15_46.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H3_T16_47.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H3_T1_33.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H3_T2_34.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H3_T3_35.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H3_T4_36.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H3_T5_37.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H3_T6_38.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H3_T7_39.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H3_T8_40.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/High/H3_T9_41.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L1_T0_1.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L1_T11_11.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L1_T12_12.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L1_T13_13.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L1_T14_14.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L1_T15_15.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L1_T16_16.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L1_T1_2.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L1_T2_3.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L1_T3_4.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L1_T4_5.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L1_T5_6.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L1_T6_7.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L1_T7_8.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L1_T8_9.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L1_T9_10.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L2_T0_17.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L2_T11_27.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L2_T12_28.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L2_T13_29.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L2_T14_30.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L2_T15_31.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L2_T16_32.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L2_T1_18.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L2_T2_19.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L2_T3_20.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L2_T4_21.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L2_T5_22.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L2_T6_23.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L2_T7_24.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L2_T8_25.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L2_T9_26.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L3_T0_33.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L3_T11_43.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L3_T12_44.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L3_T13_45.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L3_T14_46.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L3_T15_47.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L3_T16_48.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L3_T1_34.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L3_T2_35.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L3_T3_36.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L3_T4_37.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L3_T5_38.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L3_T6_39.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L3_T7_40.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L3_T8_41.cif
+INFO:__main__:/data/weizmann/EhV/high_time_res/Low/L3_T9_42.cif
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;meta_label&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>-      1494434
+COI     857893
+Name: meta_label, dtype: int64</pre>
 </div>
 
 </div>
@@ -208,11 +389,333 @@ INFO:root:Loading dir D:/Experiment_data/weizmann/EhV/control\T7\R3
 
 <div class="inner_cell">
     <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(2352327, 146)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Feature-organization">Feature organization<a class="anchor-link" href="#Feature-organization"> </a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Raw-features">Raw features<a class="anchor-link" href="#Raw-features"> </a></h3><p>Contain values that are not corrected for camera background intensity.</p>
+
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="remove_unwanted_features" class="doc_header"><code>remove_unwanted_features</code><a href="https://github.com/mlippeve/ehv/tree/master/ehv/load.py#L82" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>remove_unwanted_features</code>(<strong><code>df</code></strong>)</p>
+</blockquote>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_201</span> <span class="o">=</span> <span class="n">remove_unwanted_features</span><span class="p">(</span><span class="n">df_201</span><span class="p">)</span>
 <span class="n">df_control</span> <span class="o">=</span> <span class="n">remove_unwanted_features</span><span class="p">(</span><span class="n">df_control</span><span class="p">)</span>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">remove_unwanted_features</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_markdown rendered_html output_subarea ">
+<h4 id="tag_columns" class="doc_header"><code>tag_columns</code><a href="https://github.com/mlippeve/ehv/tree/master/ehv/load.py#L89" class="source_link" style="float:right">[source]</a></h4><blockquote><p><code>tag_columns</code>(<strong><code>df</code></strong>)</p>
+</blockquote>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tag_columns</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>feat_Area_M01</th>
+      <th>feat_Area_M03</th>
+      <th>feat_Area_M04</th>
+      <th>feat_Area_M06</th>
+      <th>feat_Area_M07</th>
+      <th>feat_Area_M09</th>
+      <th>feat_Area_M11</th>
+      <th>feat_Area_MC</th>
+      <th>feat_Aspect Ratio_M01</th>
+      <th>feat_Aspect Ratio_M03</th>
+      <th>...</th>
+      <th>meta_Time</th>
+      <th>meta_Object Number</th>
+      <th>meta_Flow Speed</th>
+      <th>feat_Max Pixel_M02_Ch02</th>
+      <th>feat_Intensity_M02_Ch02</th>
+      <th>feat_Similarity_M01_Ch02_Ch03</th>
+      <th>meta_timepoint</th>
+      <th>meta_replicate</th>
+      <th>meta_group</th>
+      <th>meta_label</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>48.777779</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>17.111111</td>
+      <td>0.000000</td>
+      <td>52.555557</td>
+      <td>0.000000</td>
+      <td>64.000000</td>
+      <td>0.853319</td>
+      <td>0.0</td>
+      <td>...</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>43.123558</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>-0.050105</td>
+      <td>T0</td>
+      <td>R1</td>
+      <td>Ctrl</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>47.555557</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>23.666666</td>
+      <td>50.444443</td>
+      <td>42.555557</td>
+      <td>60.666668</td>
+      <td>65.555557</td>
+      <td>0.973512</td>
+      <td>0.0</td>
+      <td>...</td>
+      <td>0.001988</td>
+      <td>1.0</td>
+      <td>43.147675</td>
+      <td>2.573718</td>
+      <td>18.163462</td>
+      <td>0.570508</td>
+      <td>T0</td>
+      <td>R1</td>
+      <td>Ctrl</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>52.555557</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>51.222221</td>
+      <td>11.888889</td>
+      <td>52.777779</td>
+      <td>0.000000</td>
+      <td>76.666664</td>
+      <td>0.354775</td>
+      <td>0.0</td>
+      <td>...</td>
+      <td>0.003687</td>
+      <td>2.0</td>
+      <td>43.147675</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>-0.693505</td>
+      <td>T0</td>
+      <td>R1</td>
+      <td>Ctrl</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>28.444445</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>33.222221</td>
+      <td>20.111111</td>
+      <td>24.888889</td>
+      <td>29.666666</td>
+      <td>45.444443</td>
+      <td>0.965032</td>
+      <td>0.0</td>
+      <td>...</td>
+      <td>0.007776</td>
+      <td>3.0</td>
+      <td>43.147675</td>
+      <td>6.044117</td>
+      <td>99.014709</td>
+      <td>1.311105</td>
+      <td>T0</td>
+      <td>R1</td>
+      <td>Ctrl</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>37.777779</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>13.444445</td>
+      <td>34.666668</td>
+      <td>40.777779</td>
+      <td>52.777779</td>
+      <td>60.888889</td>
+      <td>0.900961</td>
+      <td>0.0</td>
+      <td>...</td>
+      <td>0.012374</td>
+      <td>4.0</td>
+      <td>43.147675</td>
+      <td>6.362179</td>
+      <td>137.038467</td>
+      <td>1.029506</td>
+      <td>T0</td>
+      <td>R1</td>
+      <td>Ctrl</td>
+      <td>-</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 123 columns</p>
+</div>
+</div>
+
+</div>
+
 </div>
 </div>
 
