@@ -1,6 +1,8 @@
 # https://pythonspeed.com/articles/activate-conda-dockerfile/
 
-FROM continuumio/miniconda3
+FROM frolvlad/alpine-miniconda3:python3.7
+
+RUN apk add bash
 
 WORKDIR /app
 
@@ -20,6 +22,11 @@ COPY settings.ini .
 COPY ehv/ ./ehv
 RUN pip install -e .
 
-EXPOSE 8888
+COPY jupyter_lab_config.py .
 
-CMD ["conda", "run", "-n", "env", "--cwd", "/app", "--no-capture-output", "jupyter", "lab", "--no-browser", "--allow-root", "--port=8888", "--ip=0.0.0.0"]
+RUN conda install -c conda-forge nodejs
+
+EXPOSE 8888
+EXPOSE 8787
+
+CMD ["conda", "run", "-n", "env", "--cwd", "/app", "--no-capture-output", "jupyter", "lab", "--no-browser", "--allow-root", "--port=8888", "--ip=0.0.0.0", "--config=/app/jupyter_lab_config.py"]

@@ -144,6 +144,8 @@ checklink/cookies.txt
 *.RData
 *.Rhistory
 *.txt
-*.yml
+config_*.yml
 */data
 */figs
+
+dask-worker-space/
