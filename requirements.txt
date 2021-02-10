@@ -16,3 +16,4 @@ xgboost
 ppscore
 imbalanced-learn
 dask-labextension
+flowkit

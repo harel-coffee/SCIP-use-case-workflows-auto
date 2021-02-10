@@ -8,9 +8,13 @@ index = {"load_config": "00_core.ipynb",
          "add_gate": "00_core.ipynb",
          "do_umap": "00_core.ipynb",
          "load_raw_ideas_tree": "1a_load.ipynb",
+         "load_raw_ideas_fcs": "1a_load.ipynb",
          "load_raw_ideas_dir": "1a_load.ipynb",
+         "load_raw_ideas_dir_dask": "1a_load.ipynb",
          "remove_unwanted_features": "1a_load.ipynb",
          "tag_columns": "1a_load.ipynb",
+         "add_merged_col": "1a_load.ipynb",
+         "apply_logicle": "2b_fluorescence_intensity_preprocessing.ipynb",
          "define_dummy": "4c_optimal_mrna_content_regression.ipynb",
          "define_mlp": "4c_optimal_mrna_content_regression.ipynb",
          "define_xgb": "4c_optimal_mrna_content_regression.ipynb",
@@ -23,6 +27,7 @@ index = {"load_config": "00_core.ipynb",
 
 modules = ["core.py",
            "load.py",
+           "fluorescence_intensity.py",
            "mrna_content_regression.py"]
 
 doc_url = "https://mlippeve.github.io/ehv/"

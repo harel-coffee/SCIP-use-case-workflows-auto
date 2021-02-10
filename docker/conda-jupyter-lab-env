@@ -10,6 +10,9 @@ WORKDIR /app
 COPY environment.yml .
 RUN conda env create -f environment.yml
 
+# flowkit related dependencies
+RUN apk add alpine-sdk cmake
+
 # Make RUN commands use the new environment:
 SHELL ["conda", "run", "-n", "env", "/bin/bash", "-c"]
 

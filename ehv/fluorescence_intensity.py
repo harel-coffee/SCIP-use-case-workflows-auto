@@ -3,6 +3,7 @@
 __all__ = ['apply_logicle']
 
 # Cell
+# export
 
 import pandas
 import os
@@ -11,6 +12,12 @@ import seaborn
 import logging
 import matplotlib.pyplot as plt
 from importlib import reload
+from ehv import core
+from joblib import load, dump
+
+plt.rcParams['figure.facecolor'] = 'white'
+
+numpy.random.seed(42)
 
 # Cell
 from ehv import load
@@ -22,13 +29,13 @@ reload(load)
 def apply_logicle(df, columns=["Intensity_MC_TMR", "Intensity_MC_Cy5", "Intensity_MC_DAPI"]):
     df = df.copy()
 
-    for (t_idx, r_idx), group_df in df.groupby(["timepoint", "replicate"]):
+    for (t_idx, r_idx), group_df in df.groupby(["meta_timepoint", "meta_replicate"]):
 
         for feat in columns:
 
             y = group_df[[feat]].values
 
-            df.loc[(df["timepoint"] == t_idx) & (df["replicate"] == r_idx), feat+"_logicle"] = \
+            df.loc[(df["meta_timepoint"] == t_idx) & (df["meta_replicate"] == r_idx), feat+"_logicle"] = \
                 flowutils.transforms.logicle(y, numpy.arange(y.shape[1]), r_quant=True)
 
     return df
