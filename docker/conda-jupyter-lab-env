@@ -32,4 +32,7 @@ RUN conda install -c conda-forge nodejs
 EXPOSE 8888
 EXPOSE 8787
 
+# qt5 related dependencies
+# RUN apk add mesa-gl
+
 CMD ["conda", "run", "-n", "env", "--cwd", "/app", "--no-capture-output", "jupyter", "lab", "--no-browser", "--allow-root", "--port=8888", "--ip=0.0.0.0", "--config=/app/jupyter_lab_config.py"]
