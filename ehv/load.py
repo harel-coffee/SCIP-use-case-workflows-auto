@@ -99,7 +99,7 @@ def load_raw_ideas_dir_dask(path: Path, feature_dir: Path, feature_postfix: Path
 
 # Cell
 def remove_unwanted_features(df):
-    todrop = df.filter(regex="(?i).*(raw|bkgd).*").columns
+    todrop = df.filter(regex="(?i).*(raw|bkgd|saturation).*").columns
 
     return df.drop(columns=todrop)
 
