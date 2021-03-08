@@ -88,12 +88,12 @@ def load_raw_ideas_fcs(cif, feature_dir, feature_postfix, label_dir):
 
     return features.join(labels, how="inner").reset_index()
 
-def load_raw_ideas_dir(path: Path, feature_dir: Path, feature_postfix: Path, label_dir: Path, load_df:pandas.DataFrame=None):
+def load_raw_ideas_dir(path: Path, feature_dir: Path, feature_postfix: Path, label_dir: Path, load_df:pandas.DataFrame=None, glob: str="*.cif"):
     logger = logging.getLogger(__name__)
 
     path = Path(path)
     dfs = []
-    for cif in path.rglob("*.cif"):
+    for cif in path.rglob(glob):
         logger.info(cif)
         if (load_df is None) or check_should_load(cif, load_df):
             features = load_raw_ideas_fcs(cif, feature_dir, feature_postfix, label_dir)
@@ -102,12 +102,12 @@ def load_raw_ideas_dir(path: Path, feature_dir: Path, feature_postfix: Path, lab
     return pandas.concat(dfs)
 
 # Cell
-def load_raw_ideas_dir_dask(path: Path, feature_dir: Path, feature_postfix: Path, label_dir: Path, load_df: pandas.DataFrame):
+def load_raw_ideas_dir_dask(path: Path, feature_dir: Path, feature_postfix: Path, label_dir: Path, load_df: pandas.DataFrame, glob: str = "*.cif"):
     logger = logging.getLogger(__name__)
 
     path = Path(path)
     dfs = []
-    for cif in path.rglob("*.cif"):
+    for cif in path.rglob(glob):
         if check_should_load(cif, load_df):
             dfs.append(delayed(load_raw_ideas_fcs)(cif, feature_dir, feature_postfix, label_dir))
 
