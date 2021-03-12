@@ -17,6 +17,7 @@ index = {"load_config": "00_core.ipynb",
          "add_merged_col": "1a_load.ipynb",
          "clean_column_names": "1a_load.ipynb",
          "apply_logicle": "2b_fluorescence_intensity_preprocessing.ipynb",
+         "get_correlated_features": "2c_selected_features_correlation_analysis.ipynb",
          "define_dummy": "4c_optimal_mrna_content_regression.ipynb",
          "define_mlp": "4c_optimal_mrna_content_regression.ipynb",
          "define_xgb": "4c_optimal_mrna_content_regression.ipynb",
@@ -30,6 +31,7 @@ index = {"load_config": "00_core.ipynb",
 modules = ["core.py",
            "load.py",
            "fluorescence_intensity.py",
+           "correlation.py",
            "mrna_content_regression.py"]
 
 doc_url = "https://mlippeve.github.io/ehv/"
