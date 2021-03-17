@@ -7,9 +7,15 @@ def get_correlated_features(df, thresh=0.8):
     correlation = df.corr()
     var = df.var()
     correlated_features = set()
+
+    # loop over all feature combinations
     for i in range(correlation.shape[0]):
         for j in range(i):
+
+            # check absolute value of correlation against threshold
             if abs(correlation.iloc[i, j]) > thresh:
+
+                # keep feature with most variance
                 if var[correlation.columns[i]] >= var[correlation.columns[j]]:
                     colname = correlation.columns[j]
                 else:

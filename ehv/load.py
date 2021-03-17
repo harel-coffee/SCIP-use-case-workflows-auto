@@ -108,7 +108,7 @@ def load_raw_ideas_dir_dask(path: Path, feature_dir: Path, feature_postfix: Path
     path = Path(path)
     dfs = []
     for cif in path.rglob(glob):
-        if check_should_load(cif, load_df):
+        if (load_df is None) or check_should_load(cif, load_df):
             dfs.append(delayed(load_raw_ideas_fcs)(cif, feature_dir, feature_postfix, label_dir))
 
     return dd.from_delayed(dfs)

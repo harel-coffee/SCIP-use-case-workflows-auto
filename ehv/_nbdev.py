@@ -18,6 +18,7 @@ index = {"load_config": "00_core.ipynb",
          "clean_column_names": "1a_load.ipynb",
          "apply_logicle": "2b_fluorescence_intensity_preprocessing.ipynb",
          "get_correlated_features": "2c_selected_features_correlation_analysis.ipynb",
+         "knn_umap_plot": "3b_umap_reduction_of_all_COI.ipynb",
          "define_dummy": "4c_optimal_mrna_content_regression.ipynb",
          "define_mlp": "4c_optimal_mrna_content_regression.ipynb",
          "define_xgb": "4c_optimal_mrna_content_regression.ipynb",
@@ -32,6 +33,7 @@ modules = ["core.py",
            "load.py",
            "fluorescence_intensity.py",
            "correlation.py",
+           "umap_all.py",
            "mrna_content_regression.py"]
 
 doc_url = "https://mlippeve.github.io/ehv/"
