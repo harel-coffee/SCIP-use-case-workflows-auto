@@ -1,4 +1,3 @@
-fcswrite
 seaborn
 matplotlib
 numpy
@@ -17,3 +16,4 @@ ppscore
 imbalanced-learn
 dask-labextension
 flowkit
+ipympl
