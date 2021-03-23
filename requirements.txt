@@ -1,6 +1,5 @@
 seaborn
 matplotlib
-numpy
 scipy
 pandas
 fcsparser
@@ -15,5 +14,8 @@ xgboost
 ppscore
 imbalanced-learn
 dask-labextension
-flowkit
 ipympl
+plotly
+flowkit==0.5.0
+numpy==1.20.1
+ipywidgets>=7.5

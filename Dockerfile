@@ -22,6 +22,8 @@ SHELL ["mamba", "run", "-n", "env", "/bin/bash", "-c"]
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
+RUN jupyter labextension install jupyterlab-plotly@4.14.3 @jupyter-widgets/jupyterlab-manager plotlywidget@4.14.3
+
 COPY README.md .
 COPY setup.py .
 COPY settings.ini .

@@ -11,31 +11,31 @@ import numpy
 import seaborn
 import logging
 import matplotlib.pyplot as plt
+from matplotlib import cm
 from importlib import reload
 from ehv import core
 from joblib import load, dump
+from pathlib import Path
+import uuid
+import re
+
+from ehv import load as e_load, core
 
 plt.rcParams['figure.facecolor'] = 'white'
 
 numpy.random.seed(42)
 
 # Cell
-from ehv import load
 import flowutils
 import ppscore
-reload(load)
+reload(e_load)
 
 # Cell
-def apply_logicle(df, columns=["Intensity_MC_TMR", "Intensity_MC_Cy5", "Intensity_MC_DAPI"]):
+def apply_logicle(df, columns=["feat_intensity_mc_ch04", "feat_intensity_mc_ch11", "feat_intensity_mc_ch7"]):
     df = df.copy()
-
     for (t_idx, r_idx), group_df in df.groupby(["meta_timepoint", "meta_replicate"]):
-
         for feat in columns:
-
             y = group_df[[feat]].values
-
             df.loc[(df["meta_timepoint"] == t_idx) & (df["meta_replicate"] == r_idx), feat+"_logicle"] = \
-                flowutils.transforms.logicle(y, numpy.arange(y.shape[1]), r_quant=True)
-
+                flowutils.transforms.logicle(y, numpy.arange(y.shape[1]))
     return df
