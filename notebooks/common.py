@@ -13,6 +13,7 @@ from joblib import load, dump
 from pathlib import Path
 import uuid
 import re
+import scipy
 
 from ehv import load as e_load, core
 

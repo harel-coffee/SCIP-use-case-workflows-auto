@@ -13,31 +13,22 @@ index = {"load_config": "00_core.ipynb",
          "load_raw_ideas_fcs": "1a_load.ipynb",
          "load_raw_ideas_dir": "1a_load.ipynb",
          "load_raw_ideas_dir_dask": "1a_load.ipynb",
+         "clean_column_names": "1a_load.ipynb",
          "remove_unwanted_features": "1a_load.ipynb",
          "tag_columns": "1a_load.ipynb",
          "add_merged_col": "1a_load.ipynb",
-         "clean_column_names": "1a_load.ipynb",
+         "get_logicle_xform": "1e_viral_infection_progression.ipynb",
+         "logicle_transform": "1e_viral_infection_progression.ipynb",
          "apply_logicle": "2b_fluorescence_intensity_preprocessing.ipynb",
-         "get_correlated_features": "2c_selected_features_correlation_analysis.ipynb",
-         "get_logicle_xform": "3c_viral_infection_progression.ipynb",
-         "logicle_transform": "3c_viral_infection_progression.ipynb",
-         "define_dummy": "4c_optimal_mrna_content_regression.ipynb",
-         "define_mlp": "4c_optimal_mrna_content_regression.ipynb",
-         "define_xgb": "4c_optimal_mrna_content_regression.ipynb",
-         "define_sgd": "4c_optimal_mrna_content_regression.ipynb",
-         "definition_dict": "4c_optimal_mrna_content_regression.ipynb",
-         "objective": "4c_optimal_mrna_content_regression.ipynb",
-         "run_optimization": "4c_optimal_mrna_content_regression.ipynb",
-         "nested_cross_validation_with_hyperparam_optimization": "4c_optimal_mrna_content_regression.ipynb",
-         "nested_cross_validation_with_hyperparam_optimization_command": "4c_optimal_mrna_content_regression.ipynb"}
+         "Correlation": "2c_selected_features_correlation_analysis.ipynb"}
 
 modules = ["core.py",
            "load.py",
+           "viral.py",
            "fluorescence_intensity.py",
            "correlation.py",
-           "umap_all.py",
-           "viral.py",
-           "mrna_content_regression.py"]
+           "None.py",
+           "umap_all.py"]
 
 doc_url = "https://mlippeve.github.io/ehv/"
 
