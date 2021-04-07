@@ -7,6 +7,7 @@ import seaborn
 import logging
 import matplotlib.pyplot as plt
 from matplotlib import cm
+import matplotlib
 from importlib import reload
 from ehv import core
 from joblib import load, dump
