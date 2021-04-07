@@ -20,15 +20,27 @@ index = {"load_config": "00_core.ipynb",
          "get_logicle_xform": "1e_viral_infection_progression.ipynb",
          "logicle_transform": "1e_viral_infection_progression.ipynb",
          "apply_logicle": "2b_fluorescence_intensity_preprocessing.ipynb",
-         "Correlation": "2c_selected_features_correlation_analysis.ipynb"}
+         "Correlation": "2c_selected_features_correlation_analysis.ipynb",
+         "GroupedTransformer": "3c_preprocessing_pipeline.ipynb",
+         "ColumnTransformer": "3c_preprocessing_pipeline.ipynb",
+         "SelectColumnsTransfomer": "3c_preprocessing_pipeline.ipynb",
+         "define_dummy": "4c_optimal_mrna_content_regression.ipynb",
+         "define_mlp": "4c_optimal_mrna_content_regression.ipynb",
+         "define_xgb": "4c_optimal_mrna_content_regression.ipynb",
+         "define_sgd": "4c_optimal_mrna_content_regression.ipynb",
+         "definition_dict": "4c_optimal_mrna_content_regression.ipynb",
+         "objective": "4c_optimal_mrna_content_regression.ipynb",
+         "run_optimization": "4c_optimal_mrna_content_regression.ipynb",
+         "nested_cross_validation_with_hyperparam_optimization": "4c_optimal_mrna_content_regression.ipynb",
+         "nested_cross_validation_with_hyperparam_optimization_command": "4c_optimal_mrna_content_regression.ipynb"}
 
 modules = ["core.py",
            "load.py",
            "viral.py",
            "fluorescence_intensity.py",
            "correlation.py",
-           "None.py",
-           "umap_all.py"]
+           "preprocessing_pipeline.py",
+           "mrna_content_regression.py"]
 
 doc_url = "https://mlippeve.github.io/ehv/"
 
