@@ -22,17 +22,8 @@ SHELL ["mamba", "run", "-n", "env", "/bin/bash", "-c"]
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-RUN jupyter labextension install jupyterlab-plotly@4.14.3 @jupyter-widgets/jupyterlab-manager plotlywidget@4.14.3
-
 COPY README.md .
 COPY setup.py .
 COPY settings.ini .
 COPY ehv/ ./ehv
 RUN pip install -e .
-
-COPY jupyter_lab_config.py .
-
-EXPOSE 8888
-EXPOSE 8787
-
-CMD ["conda", "run", "-n", "env", "--cwd", "/app", "--no-capture-output", "jupyter", "lab", "--no-browser", "--allow-root", "--port=8888", "--ip=0.0.0.0", "--config=/app/jupyter_lab_config.py"]
