@@ -33,7 +33,9 @@ index = {"load_config": "00_core.ipynb",
          "objective": "4c_optimal_mrna_content_regression.ipynb",
          "run_optimization": "4c_optimal_mrna_content_regression.ipynb",
          "nested_cross_validation_with_hyperparam_optimization": "4c_optimal_mrna_content_regression.ipynb",
-         "nested_cross_validation_with_hyperparam_optimization_command": "4c_optimal_mrna_content_regression.ipynb"}
+         "nested_cross_validation_with_hyperparam_optimization_command": "4c_optimal_mrna_content_regression.ipynb",
+         "func": "4i_GMM_clustering_all_COI.ipynb",
+         "n_components_search": "4i_GMM_clustering_all_COI.ipynb"}
 
 modules = ["core.py",
            "load.py",
@@ -41,7 +43,8 @@ modules = ["core.py",
            "fluorescence_intensity.py",
            "correlation.py",
            "preprocessing_pipeline.py",
-           "mrna_content_regression.py"]
+           "mrna_content_regression.py",
+           "gmm_clustering.py"]
 
 doc_url = "https://mlippeve.github.io/ehv/"
 

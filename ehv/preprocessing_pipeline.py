@@ -29,7 +29,7 @@ numpy.random.seed(42)
 
 # Cell
 from ehv import correlation
-from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler, PowerTransformer, Normalizer, VarianceThreshold
+from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler, PowerTransformer, Normalizer
 from sklearn.feature_selection import VarianceThreshold
 from sklearn.decomposition import FastICA, PCA, KernelPCA
 from umap import UMAP
@@ -120,6 +120,8 @@ class PandasVarianceThreshold(BaseEstimator, TransformerMixin):
 
 # Cell
 def make_pipeline_1():
+    feat_selector = make_column_selector(pattern="feat")
+    meta_selector = make_column_selector(pattern="^(feat|meta_timepoint).*")
     return Pipeline([
         ("zero_var", ColumnTransformer(PandasVarianceThreshold(), feat_selector, drop_remainder=True)),
         ("correlation", ColumnTransformer(correlation.Correlation(0.92), feat_selector, drop_remainder=True)),
