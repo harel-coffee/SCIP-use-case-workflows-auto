@@ -2,13 +2,13 @@ version: '3.9'
 services:
     jupyter:
         build: 
-            context: .
-            dockerfile: docker/conda-jupyter-lab-env
+            context: ..
+            dockerfile: docker/JupyterDockerfile
         ports:
             - "8888:8888"
             - "8787:8787"
         volumes:
-            - .:/app
+            - ..:/app
             - /data/Experiment_data:/data
             - /tmp/.X11-unix:/tmp/.X11-unix
         environment: 
