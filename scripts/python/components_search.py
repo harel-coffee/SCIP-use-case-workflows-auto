@@ -37,9 +37,9 @@ df = pipe.fit_transform(df)
 print("Data preprocessed")
 
 # do search
-data = gmm_clustering.n_components_search(df, 12, range(2, 3), 1)
+data = gmm_clustering.n_components_search(df, 40, range(2, 16), 10)
 data = pandas.DataFrame(data)
 
 print("Component search finished")
 
-dump(data, "%s.dat" % uuid.uuid4())
+dump(data, "/data/weizmann/%s.dat" % uuid.uuid4())
