@@ -19,3 +19,4 @@ flowkit==0.5.0
 numpy==1.20.1
 ipywidgets>=7.5
 pyarrow
+tifffile

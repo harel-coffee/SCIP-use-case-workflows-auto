@@ -6,7 +6,6 @@ services:
             dockerfile: docker/JupyterDockerfile
         ports:
             - "8888:8888"
-            - "8787:8787"
         volumes:
             - ..:/app
             - /data/Experiment_data:/data
