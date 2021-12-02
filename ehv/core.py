@@ -152,13 +152,19 @@ def plot_gate_zarr(sel, df, maxn=200, sort=None, channel=0):
 
     fig, axes = plt.subplots(ncols=10, nrows=int(math.ceil(len(df) / 10)), dpi=150)
     axes = axes.ravel()
-    for (idx, r), ax in zip(df.iterrows(), axes[:len(df)]):
-        z = zarr.open(r["meta_path"])
-        pixels = z[r["meta_zarr_idx"]]
-        pixels = pixels.reshape(z.attrs["shape"][r["meta_zarr_idx"]])[channel]
-        minr, minc, maxr, maxc = int(r["meta_bbox_minr"]), int(r["meta_bbox_minc"]), int(r["meta_bbox_maxr"]), int(r["meta_bbox_maxc"])
+    i = 0
+    for path, gdf in df.groupby("meta_path"):
+        z = zarr.open(path)
+        for (idx, r) in gdf.iterrows():
+            ax = axes[i]
+            pixels = z[r["meta_zarr_idx"]]
+            pixels = pixels.reshape(z.attrs["shape"][r["meta_zarr_idx"]])[channel]
+            minr, minc, maxr, maxc = int(r["meta_bbox_minr"]), int(r["meta_bbox_minc"]), int(r["meta_bbox_maxr"]), int(r["meta_bbox_maxc"])
 
-        ax.imshow(pixels[minr:maxr, minc:maxc])
-        ax.set_axis_off()
+            ax.imshow(pixels[minr:maxr, minc:maxc])
+            ax.set_axis_off()
+
+            i+=1
+
     for ax in axes[len(df):]:
         ax.set_axis_off()
