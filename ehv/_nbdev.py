@@ -22,6 +22,7 @@ index = {"load_config": "00_core.ipynb",
          "get_logicle_xform": "1e_viral_infection_progression.ipynb",
          "logicle_transform": "1e_viral_infection_progression.ipynb",
          "Correlation": "2c_selected_features_correlation_analysis.ipynb",
+         "plot_scip_segmentation": "2_threshold_masking.ipynb",
          "compare_features": "2i_feature_comparison.ipynb",
          "GroupedTransformer": "3c_preprocessing_pipeline_low.ipynb",
          "ColumnTransformer": "3c_preprocessing_pipeline_low.ipynb",
@@ -47,7 +48,8 @@ modules = ["core.py",
            "feature_comparison.py",
            "preprocessing_pipeline.py",
            "mrna_content_regression.py",
-           "gmm_clustering.py"]
+           "gmm_clustering.py",
+           "masking.py"]
 
 doc_url = "https://mlippeve.github.io/ehv/"
 
