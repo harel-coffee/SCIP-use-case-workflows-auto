@@ -2,15 +2,7 @@
 
 __all__ = ["index", "modules", "custom_doc_links", "git_url"]
 
-index = {"load_config": "00_core.ipynb",
-         "load_from_sqlite_db": "00_core.ipynb",
-         "add_gating_table": "00_core.ipynb",
-         "add_gate": "00_core.ipynb",
-         "do_umap": "00_core.ipynb",
-         "SelectFromCollection": "00_core.ipynb",
-         "plot_gate": "00_core.ipynb",
-         "plot_gate_zarr": "00_core.ipynb",
-         "load_raw_ideas_tree": "1a_load.ipynb",
+index = {"load_raw_ideas_tree": "1a_load.ipynb",
          "check_should_load": "1a_load.ipynb",
          "load_raw_ideas_fcs": "1a_load.ipynb",
          "load_raw_ideas_dir": "1a_load.ipynb",
@@ -21,8 +13,8 @@ index = {"load_config": "00_core.ipynb",
          "add_merged_col": "1a_load.ipynb",
          "get_logicle_xform": "1e_viral_infection_progression.ipynb",
          "logicle_transform": "1e_viral_infection_progression.ipynb",
-         "Correlation": "2c_selected_features_correlation_analysis.ipynb",
          "plot_scip_segmentation": "2_threshold_masking.ipynb",
+         "Correlation": "2c_selected_features_correlation_analysis.ipynb",
          "compare_features": "2i_feature_comparison.ipynb",
          "GroupedTransformer": "3c_preprocessing_pipeline_low.ipynb",
          "ColumnTransformer": "3c_preprocessing_pipeline_low.ipynb",
@@ -40,16 +32,15 @@ index = {"load_config": "00_core.ipynb",
          "func": "4i_GMM_clustering_all_COI.ipynb",
          "n_components_search": "4i_GMM_clustering_all_COI.ipynb"}
 
-modules = ["core.py",
-           "load.py",
+modules = ["load.py",
            "viral.py",
+           "masking.py",
            "fluorescence_intensity.py",
            "correlation.py",
            "feature_comparison.py",
            "preprocessing_pipeline.py",
            "mrna_content_regression.py",
-           "gmm_clustering.py",
-           "masking.py"]
+           "gmm_clustering.py"]
 
 doc_url = "https://mlippeve.github.io/ehv/"
 
