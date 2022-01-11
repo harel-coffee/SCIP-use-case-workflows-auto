@@ -24,6 +24,8 @@ df = df[~df["meta_bbox_minr"].isna()]
 df = df.drop(columns=df.filter(regex="BF2$"))
 df = df[df["meta_label"] != "unknown"]
 
+df = df.set_index(["meta_object_number", "meta_replicate", "meta_group", "meta_type"])
+
 df["meta_label"] = pandas.Categorical(df["meta_label"], categories=["mcp-_psba+", "mcp+_psba+", "mcp+_psba-", "mcp-_psba-"], ordered=True)
 
 # PREP CLASSIFICATION INPUT
