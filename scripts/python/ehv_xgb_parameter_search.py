@@ -34,7 +34,7 @@ enc = LabelEncoder().fit(df.loc[:, :, :, "Inf"]["meta_label"])
 y = enc.transform(df.loc[:, :, :, "Inf"]["meta_label"])
 
 # selection of the generic channel features for SCIP
-to_keep = df.filter(regex=".*scip.*(BF1|DAPI|SSC)$").columns
+to_keep = df.filter(regex=".*(BF1|DAPI|SSC)$").columns
 Xs = df.loc[:, :, :, "Inf"][to_keep]
 Xs.shape
 
