@@ -13,12 +13,12 @@ from sklearn.model_selection import train_test_split, RandomizedSearchCV
 
 # LOAD DATA
 
-data_dir = Path(os.environ["HOME"]) / "scratch/data/ehv"
-
-df = pq.read_table(data_dir / f"results/scip/202112021107_dapi/features.parquet").to_pandas()
+df = pq.read_table("/home/maximl/scratch/data/ehv/results/scip/202201111300/features.parquet").to_pandas()
 df["meta_group"] = df["meta_group"].astype(int)
 df["meta_replicate"] = df["meta_replicate"].astype(int)
-df = df[numpy.load(data_dir / "results/scip/202112021107_dapi/columns.npy", allow_pickle=True)]
+df = df[numpy.load("/home/maximl/scratch/data/ehv/results/scip/202201111300/columns.npy", allow_pickle=True)]
+index = numpy.load("/home/maximl/scratch/data/ehv/results/scip/202201111300/index.npy", allow_pickle=True)
+df = df.loc[index]
 
 df = df[~df["meta_bbox_minr"].isna()]
 df = df.drop(columns=df.filter(regex="BF2$"))
@@ -40,7 +40,7 @@ Xs.shape
 
 # SPLIT DATA
 
-Xs_train, Xs_test, y_train, y_test =  train_test_split(Xs, y, test_size=0.5, random_state=0)
+Xs_train, Xs_test, y_train, y_test =  train_test_split(Xs, y, test_size=0.3, random_state=0)
 
 # PARAMETER SEARCH
 
@@ -62,9 +62,9 @@ grid = RandomizedSearchCV(
         "subsample": [0.25, 0.5, 0.75, 1],
         "colsample_bytree": [0.25, 0.5, 0.75, 1]
     },
-    n_iter=1500,
+    n_iter=1000,
     refit=False,
-    n_jobs=50,
+    n_jobs=30,
     cv=3,
     scoring=scoring,
     verbose=2,
