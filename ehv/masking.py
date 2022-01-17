@@ -34,15 +34,16 @@ from scip.masking import threshold
 from scip.masking import util
 
 # Cell
-def plot_scip_segmentation(r, bbox_channel_index=0, smooth=1):
+def plot_scip_segmentation(r, bbox_channel_index=0, smooth=1, border=True):
     z = zarr.open(r.meta_path)
     pixels = z[r.meta_zarr_idx].reshape(z.attrs["shape"][r.meta_zarr_idx])
     pixels = numpy.clip(pixels, a_min=0, a_max=4096)
 
     m = threshold.get_mask(dict(pixels=pixels), main=True, main_channel=bbox_channel_index, smooth=smooth)
-    m = util.get_bounding_box(m, bbox_channel_index=bbox_channel_index)
+    m = util.get_bounding_box(m)
     m = threshold.get_mask(m, main=False, main_channel=bbox_channel_index, smooth=smooth)
-    m = util.remove_regions_touching_border(m, bbox_channel_index=bbox_channel_index)
+    if border:
+        m = util.remove_regions_touching_border(m, bbox_channel_index=bbox_channel_index)
 
     fig, axes = plt.subplots(2, len(pixels), dpi=150, squeeze=False)
     for i, (a, p) in enumerate(zip(m["mask"], pixels)):
