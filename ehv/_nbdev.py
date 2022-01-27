@@ -2,9 +2,20 @@
 
 __all__ = ["index", "modules", "custom_doc_links", "git_url"]
 
-index = {"plot_scip_segmentation": "00_threshold_masking.ipynb"}
+index = {"plot_scip_segmentation": "00_threshold_masking.ipynb",
+         "load_config": "00_core.ipynb",
+         "load_from_sqlite_db": "00_core.ipynb",
+         "add_gating_table": "00_core.ipynb",
+         "add_gate": "00_core.ipynb",
+         "do_umap": "00_core.ipynb",
+         "SelectFromCollection": "00_core.ipynb",
+         "plot_gate": "00_core.ipynb",
+         "plot_gate_zarr": "00_core.ipynb",
+         "plot_gate_zarr_channels": "00_core.ipynb",
+         "plot_gate_czi": "00_core.ipynb"}
 
-modules = ["masking.py"]
+modules = ["masking.py",
+           "core.py"]
 
 doc_url = "https://mlippeve.github.io/ehv/"
 
