@@ -7,35 +7,32 @@ import pandas
 import pyarrow.parquet as pq
 
 from xgboost import XGBClassifier
+from sklearn.experimental import enable_halving_search_cv
 from sklearn.preprocessing import LabelEncoder
-from sklearn.model_selection import train_test_split, RandomizedSearchCV
+from sklearn.model_selection import train_test_split, HalvingRandomSearchCV
 
 
 # LOAD DATA
 
-df = pq.read_table("/home/maximl/scratch/data/ehv/results/scip/202201111300/features.parquet").to_pandas()
+df = pq.read_table("/home/maximl/scratch/data/ehv/results/scip/202201311209_Inf/features.parquet").to_pandas()
 df["meta_group"] = df["meta_group"].astype(int)
 df["meta_replicate"] = df["meta_replicate"].astype(int)
-df = df[numpy.load("/home/maximl/scratch/data/ehv/results/scip/202201111300/columns.npy", allow_pickle=True)]
-index = numpy.load("/home/maximl/scratch/data/ehv/results/scip/202201111300/index.npy", allow_pickle=True)
+df = df[numpy.load("/home/maximl/scratch/data/ehv/results/scip/202201311209_Inf/columns.npy", allow_pickle=True)]
+index = numpy.load("/home/maximl/scratch/data/ehv/results/scip/202201311209_Inf/index.npy", allow_pickle=True)
 df = df.loc[index]
 
-df = df[~df["meta_bbox_minr"].isna()]
-df = df.drop(columns=df.filter(regex="BF2$"))
 df = df[df["meta_label"] != "unknown"]
-
-df = df.set_index(["meta_object_number", "meta_replicate", "meta_group", "meta_type"])
-
+df = df.set_index(["meta_type", "meta_object_number", "meta_replicate", "meta_group"])
 df["meta_label"] = pandas.Categorical(df["meta_label"], categories=["mcp-_psba+", "mcp+_psba+", "mcp+_psba-", "mcp-_psba-"], ordered=True)
 
 # PREP CLASSIFICATION INPUT
 
-enc = LabelEncoder().fit(df.loc[:, :, :, "Inf"]["meta_label"])
-y = enc.transform(df.loc[:, :, :, "Inf"]["meta_label"])
+enc = LabelEncoder().fit(df.loc["Inf"]["meta_label"])
+y = enc.transform(df.loc["Inf"]["meta_label"])
 
 # selection of the generic channel features for SCIP
-to_keep = df.filter(regex=".*(BF1|DAPI|SSC)$").columns
-Xs = df.loc[:, :, :, "Inf"][to_keep]
+to_keep = df.filter(regex=".*(BF1|BF2|DAPI|SSC)$").columns
+Xs = df.loc["Inf"][to_keep]
 Xs.shape
 
 # SPLIT DATA
@@ -52,23 +49,26 @@ model = XGBClassifier(
     use_label_encoder=False
 )
 
-scoring = ('balanced_accuracy', 'f1_macro', 'f1_micro', 'precision_macro', 'precision_micro', 'recall_macro', 'recall_micro')
-grid = RandomizedSearchCV(
-    model,
-    {
+grid = HalvingRandomSearchCV(
+    estimator=model,
+    param_grid={
         "max_depth": [6, 5, 4, 3, 2],
         "learning_rate": [0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0.05, 0.01],
         "n_estimators": [100, 200, 400, 600, 800, 1000],
         "subsample": [0.25, 0.5, 0.75, 1],
         "colsample_bytree": [0.25, 0.5, 0.75, 1]
     },
-    n_iter=1000,
+    factor=3,
+    resource='n_samples',
+    n_candidates=1000,
+    min_resources='exhaust',
     refit=False,
     n_jobs=30,
     cv=3,
-    scoring=scoring,
-    verbose=2,
-    return_train_score=True
+    scoring='balanced_accuracy',
+    verbose=3,
+    return_train_score=True,
+    random_state=0
 ).fit(
     Xs_train,
     y_train
