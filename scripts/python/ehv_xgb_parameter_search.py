@@ -37,7 +37,9 @@ Xs.shape
 
 # SPLIT DATA
 
-Xs_train, Xs_test, y_train, y_test =  train_test_split(Xs, y, test_size=0.3, random_state=0)
+Xs_train, Xs_test, y_train, y_test =  train_test_split(Xs, y, test_size=0.1, random_state=0)
+
+print(Xs_train.shape)
 
 # PARAMETER SEARCH
 
@@ -51,16 +53,17 @@ model = XGBClassifier(
 
 grid = HalvingRandomSearchCV(
     estimator=model,
-    param_grid={
+    param_distributions={
         "max_depth": [6, 5, 4, 3, 2],
         "learning_rate": [0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0.05, 0.01],
-        "n_estimators": [100, 200, 400, 600, 800, 1000],
-        "subsample": [0.25, 0.5, 0.75, 1],
-        "colsample_bytree": [0.25, 0.5, 0.75, 1]
+        # "n_estimators": [100, 200, 400, 600, 800, 1000],
+        "subsample": [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+        "colsample_bytree": [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
     },
     factor=3,
-    resource='n_samples',
-    n_candidates=1000,
+    resource='n_estimators',
+    n_candidates=2000,
+    max_resources=1000,
     min_resources='exhaust',
     refit=False,
     n_jobs=30,
