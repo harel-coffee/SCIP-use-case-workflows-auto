@@ -1,33 +1,26 @@
-# packages
-install.packages("BiocManager")
-install.packages("devtools")
-BiocManager::install("SingleCellExperiment")
-devtools::install_github("wesm/feather/R")
-
-BiocManager::install(version='devel')
-BiocManager::install("slingshot")
-
 # libraries
 library(slingshot, quietly = TRUE)
 library(feather, quietly = TRUE)
 library(SingleCellExperiment, quietly = TRUE)
 library(RColorBrewer)
 
-df <- read_feather("./notebooks/tmp/data.feather")
+df <- read_feather("./notebooks/slingshot.feather")
 
 exp <- SingleCellExperiment(list(fake=matrix(seq(1, nrow(df)), nrow=1)))
 reducedDims(exp) <- list(
-  PCA = data.matrix(df[grep("^feat_pca_[0-9]$", names(df))]),
-  UMAP = data.matrix(df[grep("^feat_umap", names(df))])
+  PCA = data.matrix(df[grep("^pca", names(df))])
 )
-colData(exp)$BGMM <- df$meta_cluster_label
+colData(exp)$GMM <- df$cluster
 
 res <- slingshot(
   data = exp,
-  clusterLabels = "BGMM",
+  clusterLabels = "GMM",
   reducedDim = "PCA",
   approx_points = 500
 )
+
+pt <- as.data.frame(res$slingPseudotime_1)
+write_feather(pt, './notebooks/pt.feather')
 
 colors <- colorRampPalette(brewer.pal(11,'Spectral')[-6])(100)
 plotcol <- colors[cut(res$slingPseudotime_1, breaks=100)]
