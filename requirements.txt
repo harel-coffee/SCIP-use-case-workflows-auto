@@ -9,14 +9,13 @@ optuna
 scikit-learn
 jupyterlab
 pyyaml
-pyimagej
 xgboost
 imbalanced-learn
 dask-labextension
 ipympl
 plotly
-flowkit==0.5.0
-numpy==1.20.1
+flowkit
+numpy
 ipywidgets>=7.5
 pyarrow
 tifffile

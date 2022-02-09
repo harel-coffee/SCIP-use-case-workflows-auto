@@ -205,8 +205,7 @@ def plot_gate_zarr_channels(selectors, df, maxn=20, sort=None, channel_ind=[0], 
             pixels = z[r["meta_zarr_idx"]]
             pixels = pixels.reshape(z.attrs["shape"][r["meta_zarr_idx"]])[channel_ind]
 
-            m = threshold.get_mask(dict(pixels=pixels), main=True, main_channel=3, smooth=0.75)
-            m = threshold.get_mask(m, main=False, main_channel=3, smooth=0.75)
+            m = threshold.get_mask(dict(pixels=pixels), main_channel=3, smooth=0.75)
             m = util.remove_regions_touching_border(m, bbox_channel_index=3)
 
             minr, minc, maxr, maxc = int(r["meta_bbox_minr"]), int(r["meta_bbox_minc"]), int(r["meta_bbox_maxr"]), int(r["meta_bbox_maxc"])
@@ -218,7 +217,7 @@ def plot_gate_zarr_channels(selectors, df, maxn=20, sort=None, channel_ind=[0], 
             extent[:, 0] = numpy.min(numpy.array([extent[:, 0], pixels.reshape(nchannels, -1).min(axis=1)]), axis=0)
             extent[:, 1] = numpy.max(numpy.array([extent[:, 1], pixels.reshape(nchannels, -1).max(axis=1)]), axis=0)
 
-    fig = plt.figure(constrained_layout=True, dpi=75, figsize=(10, 2*len(df)))
+    fig = plt.figure(constrained_layout=True, dpi=75, figsize=(5, len(df)))
     grid = gridspec.GridSpec(len(selectors), 1, figure=fig, hspace=0, wspace=0)
     cmap = plt.get_cmap('viridis')
     norms = [Normalize(vmin=a, vmax=b) for a,b in extent]
