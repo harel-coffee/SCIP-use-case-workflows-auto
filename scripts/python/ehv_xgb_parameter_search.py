@@ -34,11 +34,11 @@ grid = HalvingRandomSearchCV(
     factor=3,
     resource='n_estimators',
     n_candidates=3000,
-    max_resources=1500,
+    max_resources=4500,
     min_resources=2,
     aggressive_elimination=True,
     refit=False,
-    n_jobs=20,
+    n_jobs=8,
     cv=3,
     scoring='balanced_accuracy',
     verbose=3,
@@ -51,5 +51,5 @@ grid = HalvingRandomSearchCV(
 
 # STORE RESULTS
 
-with open("grid_ehv.pickle", "wb") as fh:
+with open("grid_ehv_2.pickle", "wb") as fh:
     pickle.dump(grid, fh)
