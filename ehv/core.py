@@ -175,7 +175,7 @@ def plot_gate_zarr(sel, df, maxn=200, sort=None, channel=0):
         ax.set_axis_off()
 
 # Cell
-def plot_gate_zarr_channels(selectors, df, maxn=20, sort=None, channel_ind=[0], channel_names=["c"]):
+def plot_gate_zarr_channels(selectors, df, maxn=20, sort=None, main_channel=3, smooth=0.75, channel_ind=[0], channel_names=["c"]):
 
     dfs = []
     for i, sel in enumerate(selectors):
@@ -205,8 +205,8 @@ def plot_gate_zarr_channels(selectors, df, maxn=20, sort=None, channel_ind=[0], 
             pixels = z[r["meta_zarr_idx"]]
             pixels = pixels.reshape(z.attrs["shape"][r["meta_zarr_idx"]])[channel_ind]
 
-            m = threshold.get_mask(dict(pixels=pixels), main_channel=3, smooth=0.75)
-            m = util.remove_regions_touching_border(m, bbox_channel_index=3)
+            m = threshold.get_mask(dict(pixels=pixels), main_channel=main_channel, smooth=smooth)
+            m = util.remove_regions_touching_border(m, bbox_channel_index=main_channel)
 
             minr, minc, maxr, maxc = int(r["meta_bbox_minr"]), int(r["meta_bbox_minc"]), int(r["meta_bbox_maxr"]), int(r["meta_bbox_maxc"])
 
