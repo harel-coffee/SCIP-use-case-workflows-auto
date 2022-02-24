@@ -27,7 +27,7 @@ model = make_pipeline_imb(
 grid = HalvingGridSearchCV(
     estimator=model,
     param_grid={
-        "kneighborsclassifier__n_neighbors": [3, 5, 8, 10, 15, 30],
+        "kneighborsclassifier__n_neighbors": [3, 5, 8, 10, 15, 20, 25, 30, 35, 40, 45, 50],
         "kneighborsclassifier__weights": ["uniform", "distance"],
         "kneighborsclassifier__algorithm": ["ball_tree", "kd_tree", "brute"],
         "kneighborsclassifier__p": [1, 2]
