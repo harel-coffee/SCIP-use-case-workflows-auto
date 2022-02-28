@@ -1,0 +1,16 @@
+#!/bin/bash
+
+#PBS -N ehv_param_optimization
+#PBS -l walltime=24:00:00
+#PBS -l pmem=1gb
+#PBS -l nodes=1:ppn=10
+
+PROCS=10
+
+source $VSC_HOME/vsc_data/venv/bin/activate
+
+ehv_hyperparam_optimization \
+	-t IntensityMCTMRlogicle \
+	-s $VSC_HOME/vsc_data_vo/results/EhV/hyper_param/ \
+	-m mlp,sgd -c $VSC_HOME/ehv-analysis/projects/config_hpc.yml \
+	-ot 500 -oj 8 -on tmr_run1 -p $PROCS

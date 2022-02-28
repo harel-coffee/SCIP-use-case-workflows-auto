@@ -25,11 +25,11 @@ grid = HalvingGridSearchCV(
     estimator=model,
     param_grid=[{
         "svc__C": [0.1, 0.5, 1, 1.5, 2, 2.5],
-        "svc__gamma": ['scale', 1/100, 1/10, 1],
+        "svc__gamma": ['scale', 1/250, 1/100, 1/10, 1],
         "svc__kernel": ["rbf", "sigmoid"]
     }, {
         "svc__C": [0.1, 0.5, 1, 1.5, 2, 2.5],
-        "svc__gamma": ['scale', 1/100, 1/10, 1],
+        "svc__gamma": ['scale', 1/250, 1/100, 1/10, 1],
         "svc__degree": [2, 3, 4, 5],
         "svc__kernel": ["poly"]
     }],
@@ -39,8 +39,8 @@ grid = HalvingGridSearchCV(
     min_resources=1000,
     aggressive_elimination=True,
     refit=False,
-    n_jobs=10,
-    cv=3,
+    n_jobs=32,
+    cv=5,
     scoring='balanced_accuracy',
     verbose=3,
     return_train_score=True,

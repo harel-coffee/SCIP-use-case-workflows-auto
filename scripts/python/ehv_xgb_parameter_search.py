@@ -39,7 +39,7 @@ grid = HalvingRandomSearchCV(
     aggressive_elimination=True,
     refit=False,
     n_jobs=8,
-    cv=3,
+    cv=5,
     scoring='balanced_accuracy',
     verbose=3,
     return_train_score=True,
@@ -51,5 +51,5 @@ grid = HalvingRandomSearchCV(
 
 # STORE RESULTS
 
-with open("grid_ehv_2.pickle", "wb") as fh:
+with open("grid_ehv_5fold.pickle", "wb") as fh:
     pickle.dump(grid, fh)
