@@ -28,7 +28,8 @@ def load(data_dir):
 
     # PREP CLASSIFICATION INPUT
 
-    enc = LabelEncoder().fit(df.loc["Inf"]["meta_label"])
+    enc = LabelEncoder()
+    enc.classes_ = df.loc["Inf"]["meta_label"].cat.categories.values
     y = enc.transform(df.loc["Inf"]["meta_label"])
 
     # selection of the generic channel features for SCIP
