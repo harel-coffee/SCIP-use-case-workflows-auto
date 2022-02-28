@@ -50,6 +50,6 @@ def compare_features(df, x1, x2):
     y_hat = numpy.poly1d(z)(z1[sorted_index])
     ax.plot(z1[sorted_index], y_hat, "--", lw=0.5, color="grey")
     ax.scatter(z1[sorted_index], z2[sorted_index], s=0.5, alpha=0.5, edgecolors="none")
-    ax.set_title(r'pearson = %.4f, spearman = %.4f' % (pearsonr(z1,z2)[0], spearmanr(z1,z2)[0]))
+    # ax.set_title(r'pearson = %.4f, spearman = %.4f' % (pearsonr(z1,z2)[0], spearmanr(z1,z2)[0]))
 
     return ax
