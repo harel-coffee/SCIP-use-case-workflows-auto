@@ -32,11 +32,11 @@ grid = HalvingGridSearchCV(
         "kneighborsclassifier__algorithm": ["ball_tree", "kd_tree", "brute"],
         "kneighborsclassifier__p": [1, 2]
     },
-    factor=3,
+    factor=2,
     resource='n_samples',
     max_resources='auto',
     min_resources=1000,
-    aggressive_elimination=True,
+    aggressive_elimination=False,
     refit=False,
     n_jobs=32,
     cv=5,

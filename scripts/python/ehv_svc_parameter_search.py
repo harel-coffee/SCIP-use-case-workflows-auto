@@ -33,11 +33,11 @@ grid = HalvingGridSearchCV(
         "svc__degree": [2, 3, 4, 5],
         "svc__kernel": ["poly"]
     }],
-    factor=3,
+    factor=2,
     resource='n_samples',
     max_resources='auto',
     min_resources=1000,
-    aggressive_elimination=True,
+    aggressive_elimination=False,
     refit=False,
     n_jobs=32,
     cv=5,
