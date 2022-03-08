@@ -30,8 +30,8 @@ rfecv = RFECV(
     step=1,
     n_jobs=5,
     verbose=3,
-    cv=StratifiedKFold(5, random_state=0),
-    scoring="balanced_accuracy_score",
+    cv=StratifiedKFold(5),
+    scoring="balanced_accuracy",
     min_features_to_select=min_features_to_select,
 ).fit(Xs_train, y_train)
 
