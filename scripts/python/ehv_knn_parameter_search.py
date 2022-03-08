@@ -15,8 +15,9 @@ data_dir = Path(
     "/data/gent/vo/000/gvo00070/vsc42015/datasets/weizmann/EhV/v2/results/scip/" + 
     "202202071958"
 )
+pattern = ".*(BF1|BF2|SSC)$"
 
-Xs_train, y_train = ehv_parameter_search.load(data_dir)
+Xs_train, y_train = ehv_parameter_search.load(data_dir, pattern)
 
 model = make_pipeline_imb(
     StandardScaler(),

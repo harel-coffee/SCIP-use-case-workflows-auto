@@ -12,8 +12,9 @@ data_dir = Path(
     "/home/maximl/scratch/data/ehv/results/scip/" + 
     "202202071958"
 )
+pattern = ".*(BF1|BF2|SSC)$"
 
-Xs_train, y_train = ehv_parameter_search.load(data_dir)
+Xs_train, y_train = ehv_parameter_search.load(data_dir, pattern)
 
 model = XGBClassifier(
     booster="gbtree",

@@ -5,7 +5,7 @@ import pyarrow.parquet as pq
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 
-def load(data_dir):
+def load(data_dir, pattern):
 
     df = pq.read_table(data_dir / "features.parquet").to_pandas()
 
@@ -33,7 +33,7 @@ def load(data_dir):
     y = enc.transform(df.loc["Inf"]["meta_label"])
 
     # selection of the generic channel features for SCIP
-    to_keep = df.filter(regex=".*(BF1|BF2|DAPI|SSC)$").columns
+    to_keep = df.filter(regex=pattern).columns
     Xs = df.loc["Inf"][to_keep]
     Xs.shape
 
