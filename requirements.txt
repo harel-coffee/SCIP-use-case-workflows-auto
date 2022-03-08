@@ -20,6 +20,7 @@ ipywidgets>=7.5
 pyarrow
 tifffile
 umap-learn
-aicsimageio[czi]
+aicsimageio
 shap
 hiplot
+aicspylibczi
