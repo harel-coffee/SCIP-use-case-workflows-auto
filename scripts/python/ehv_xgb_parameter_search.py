@@ -12,9 +12,13 @@ data_dir = Path(
     "/home/maximl/scratch/data/ehv/results/scip/" + 
     "202202071958"
 )
-pattern = ".*(BF1|BF2|SSC)$"
+pattern = "feat.*(BF1|BF2|DAPI|SSC)$"
 
 Xs_train, y_train = ehv_parameter_search.load(data_dir, pattern)
+
+with open(data_dir / "ehv_xgb_rfe.pickle", "rb") as fh:
+    rfecv = pickle.load(fh)
+selected = rfecv.get_feature_names_out()
 
 model = XGBClassifier(
     booster="gbtree",
@@ -46,11 +50,11 @@ grid = HalvingRandomSearchCV(
     return_train_score=True,
     random_state=0
 ).fit(
-    Xs_train,
+    Xs_train[selected],
     y_train
 )
 
 # STORE RESULTS
 
-with open("grid_ehv_5fold.pickle", "wb") as fh:
+with open("grid_rfe_xgb.pickle", "wb") as fh:
     pickle.dump(grid, fh)
