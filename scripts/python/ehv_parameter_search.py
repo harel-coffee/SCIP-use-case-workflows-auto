@@ -33,7 +33,7 @@ def load(data_dir, pattern):
     y = enc.transform(df.loc["Inf"]["meta_label"])
 
     # selection of the generic channel features for SCIP
-    to_keep = df.filter(regex=pattern).columns
+    to_keep = df.filter(regex=pattern).filter(regex="feat").columns
     Xs = df.loc["Inf"][to_keep]
     Xs.shape
 
