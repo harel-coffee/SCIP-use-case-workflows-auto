@@ -10,6 +10,7 @@ import os
 WIDTH=109
 HEIGHT=112
 CHANNELS=[4,5,6]
+NORM_FEATS = ["feat_max_Bright", "feat_max_Oblique", "feat_max_PGC"]
 DATA_DIR = Path("/home/maximl/scratch/data/cd7/800/results/scip/202203221745/")
 
 
@@ -49,7 +50,9 @@ def load_cells(df):
     pixels = im.get_image_data("CZXY", T=0, C=CHANNELS)
     pixels = numpy.max(pixels, axis=1)
 
-    arr = numpy.empty(shape=(len(df), len(CHANNELS), WIDTH, HEIGHT), dtype=int)
+    scale = numpy.array([df[feat].max() for feat in NORM_FEATS])
+
+    arr = numpy.empty(shape=(len(df), len(CHANNELS), WIDTH, HEIGHT), dtype=numpy.float32)
 
     for i, (idx, row) in enumerate(df.iterrows()):
         bbox = int(row.meta_bbox_minr), int(row.meta_bbox_minc), int(row.meta_bbox_maxr), int(row.meta_bbox_maxc)
@@ -58,7 +61,7 @@ def load_cells(df):
             mask[bbox[0]:bbox[2], bbox[1]:bbox[3]] == idx[-1],
             pixels[:, bbox[0]:bbox[2], bbox[1]:bbox[3]],
             0
-        )
+        ) / scale[:, numpy.newaxis, numpy.newaxis]
 
         arr[i] = cropND(tmp)
 

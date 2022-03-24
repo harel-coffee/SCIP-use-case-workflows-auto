@@ -32,8 +32,8 @@ def main():
         layers.Conv2D(16, (3, 3), activation='relu', padding='same', strides=2),
         layers.Conv2D(8, (3, 3), activation='relu', padding='same', strides=2),
         layers.Flatten(),
-	layers.Dense(512),
-	layers.Dense(512),
+        layers.Dense(512),
+        layers.Dense(512),
         layers.Dense(n_components)
     ])
 
@@ -42,12 +42,14 @@ def main():
         dims=dims,
         n_components=n_components,
         verbose=True,
-        n_training_epochs=1
+        n_training_epochs=2
     )
     embedding = embedder.fit_transform(X)
 
-    numpy.save(DATA_DIR / "embeddings/paramumap2.dat", embedding)
-    embedder.save(DATA_DIR / "models/paramumap2")
+    output_dir = DATA_DIR / "embeddings/param_umap/202203241023"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    numpy.save(output_dir / "embedding.npy", embedding)
+    embedder.save(output_dir / "model")
 
 
 if __name__ == "__main__":
