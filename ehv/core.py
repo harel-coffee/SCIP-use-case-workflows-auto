@@ -222,7 +222,7 @@ def plot_gate_zarr_channels(selectors, df, maxn=20, sort=None, mask=False, main_
             extent[:, 0] = numpy.nanmin(numpy.array([extent[:, 0], numpy.nanmin(p.reshape(nchannels, -1), axis=1)]), axis=0)
             extent[:, 1] = numpy.nanmax(numpy.array([extent[:, 1], numpy.nanmax(p.reshape(nchannels, -1), axis=1)]), axis=0)
 
-    fig = plt.figure(dpi=75, figsize=(len(channel_ind)*2.5, len(df)*0.5))
+    fig = plt.figure(dpi=75, figsize=(len(channel_ind)*2.5, len(df)*0.8))
     grid = gridspec.GridSpec(1, len(selectors), figure=fig, wspace=0.1)
     cmap = plt.get_cmap('viridis')
     norms = [Normalize(vmin=a, vmax=b) for a,b in extent]
