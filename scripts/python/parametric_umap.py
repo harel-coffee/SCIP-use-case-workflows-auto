@@ -20,7 +20,7 @@ def main():
     df = df.sort_index()
     df = df.loc[idx]
 
-    X = numpy.load(DATA_DIR / "neutrophil_images.npy")
+    X = numpy.load(DATA_DIR / "neutrophil_images_scale2.npy")
     X = numpy.swapaxes(X, 1, -1)
     X = X.reshape(X.shape[0], -1)
 
@@ -42,11 +42,11 @@ def main():
         dims=dims,
         n_components=n_components,
         verbose=True,
-        n_training_epochs=2
+        n_training_epochs=1
     )
     embedding = embedder.fit_transform(X)
 
-    output_dir = DATA_DIR / "embeddings/param_umap/202203241023"
+    output_dir = DATA_DIR / "embeddings/param_umap/202203241023_scale2"
     output_dir.mkdir(parents=True, exist_ok=True)
     numpy.save(output_dir / "embedding.npy", embedding)
     embedder.save(output_dir / "model")
