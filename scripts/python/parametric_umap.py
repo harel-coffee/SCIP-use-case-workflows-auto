@@ -7,8 +7,9 @@ from tensorflow.keras import layers
 
 
 DATA_DIR = Path("/home/maximl/scratch/data/cd7/800/results/scip/202203221745/")
-WIDTH=109
-HEIGHT=112
+WIDTH = 109
+HEIGHT = 112
+SCALE = 2
 
 
 def main():
@@ -24,7 +25,7 @@ def main():
     X = numpy.swapaxes(X, 1, -1)
     X = X.reshape(X.shape[0], -1)
 
-    dims = (WIDTH, HEIGHT, 3)
+    dims = (WIDTH // SCALE, HEIGHT // SCALE, 3)
     n_components = 2
 
     encoder = keras.Sequential([
