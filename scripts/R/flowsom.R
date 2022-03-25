@@ -14,54 +14,29 @@ exprs <- as.matrix(exprs)
 
 meta <- df[grep("^meta", names(df))]
 
-fluor_cols <- colnames(exprs)[grep("^feat_bgcorr.*sum", colnames(exprs))]
+biased_fluor_cols <- colnames(exprs)[grep("^feat_bgcorr_sum.*(Cy5|TMR)", colnames(exprs))]
+unbiased_fluor_cols <- colnames(exprs)[grep("^feat_bgcorr_sum_(DAPI)", colnames(exprs))]
+labelfree_cols <- colnames(exprs)[grep("^feat_bgcorr_sum_(BF|SSC)", colnames(exprs))]
+cols <- colnames(exprs)[!colnames(exprs) %in% c(biased_fluor_cols, unbiased_fluor_cols, labelfree_cols)]
 uncorr_cols <- scan("uncorrelated_cols.txt", what="character")
+uncorr_cols <- uncorr_cols[!uncorr_cols %in% c(biased_fluor_cols, unbiased_fluor_cols, labelfree_cols)]
 
 normalize <- function(x, na.rm = TRUE) {
   return((x- min(x)) /(max(x)-min(x)))
 }
 
-proc <- function(cols) {
-  cols_scaled <- sapply(cols, function(x) paste0(x, "_scaled"), USE.NAMES = FALSE)
-  cols_mm <- sapply(cols, function(x) paste0(x, "_mm"), USE.NAMES = FALSE)
-  
-  s <- scale(exprs[, cols])
-  m <- sapply(cols, function(x) normalize(exprs[, x]))
-  
-  colnames(s) <- cols_scaled
-  colnames(m) <- cols_mm
-  
-  return(list(cols = cols, scaled = s, minmax = m))
-}
+ff <- flowFrame(exprs)
+trans <- flowCore::estimateLogicle(ff, channels = c("feat_bgcorr_sum_Cy5", "feat_bgcorr_sum_DAPI"))
+ff <- flowWorkspace::transform(ff, trans)
+trans <- transformList("feat_bgcorr_sum_TMR", logicleTransform(w=1.3))
+ff <- flowWorkspace::transform(ff, trans)
 
-area <- proc(colnames(exprs)[grep("area", colnames(exprs))])
-eccentricity <- proc(colnames(exprs)[grep("eccentricity", colnames(exprs))])
-extent <- proc(colnames(exprs)[grep("extent", colnames(exprs))])
-majoraxis <- proc(colnames(exprs)[grep("major_axis", colnames(exprs))])
-minoraxis <- proc(colnames(exprs)[grep("minor_axis", colnames(exprs))])
-diameter <- proc(colnames(exprs)[grep("diameter", colnames(exprs))])
-uncorr <- proc(uncorr_cols)
-
-ff <- flowFrame(
-  exprs = cbind(
-    exprs[, c(fluor_cols, area$cols, eccentricity$cols, extent$cols)], 
-    area$scaled, eccentricity$scaled, extent$scaled, majoraxis$scaled, minoraxis$scaled, diameter$scaled,
-    area$minmax, majoraxis$minmax, minoraxis$minmax, diameter$minmax
-  )
-)
-transformList <- flowCore::estimateLogicle(ff, channels = fluor_cols)
-ff <- flowWorkspace::transform(ff, transformList)
-
-fluor_mm <- normalize(exprs(ff[,fluor_cols]))
-colnames(fluor_mm) <- sapply(colnames(fluor_mm), function(x) paste0(x, "_mm"), USE.NAMES = FALSE)
-
-ff <- flowFrame(cbind(exprs(ff), fluor_mm))
-ff_uncorr <- flowFrame(cbind(exprs[, uncorr_cols], uncorr$minmax, fluor_mm))
+ff_mm <- flowFrame(apply(exprs(ff), 2, normalize))
 
 nClus <- 15
 
-# fluor only
-fsom <- FlowSOM::FlowSOM(ff, compensate = FALSE, scale=FALSE, colsToUse=fluor_cols, xdim=10, ydim=10, nClus=nClus, seed=42)
+# biased fluor only
+fsom <- FlowSOM::FlowSOM(ff, compensate = FALSE, scale=FALSE, colsToUse=biased_fluor_cols, xdim=10, ydim=10, nClus=nClus, seed=42)
 
 pdf("fluor_pies.pdf")
 PlotPies(fsom, cellTypes=as.factor(meta$meta_group), backgroundValues=fsom$metaclustering)
@@ -75,41 +50,28 @@ FlowSOMmary(fsom, plotFile = "fluor_sommary.pdf")
 
 write(GetMetaclusters(fsom), file="fluor_metaclusters.txt", ncolumns=1)
 
-# minmax fluor + ecc + minmax area + major + minor + diameter
-cols <- c(
-  colnames(fluor_mm), 
-  colnames(area$minmax), 
-  colnames(majoraxis$minmax),
-  colnames(minoraxis$minmax),
-  colnames(diameter$minmax),
-  eccentricity$cols
-)
-fsom <- FlowSOM::FlowSOM(ff, compensate = FALSE, scale=FALSE, colsToUse=cols, xdim=10, ydim=10, nClus=nClus, seed=42)
+# all intensity
+c <- c(biased_fluor_cols, unbiased_fluor_cols, labelfree_cols)
+fsom <- FlowSOM::FlowSOM(ff_mm, compensate = FALSE, scale=FALSE, colsToUse=c, xdim=10, ydim=10, nClus=nClus, seed=42)
+PlotPies(fsom, cellTypes=as.factor(meta$meta_label), backgroundValues=fsom$metaclustering)
 
-pdf("fluor+morph_pies.pdf")
+# all cols
+c <- c(cols, biased_fluor_cols, unbiased_fluor_cols, labelfree_cols)
+fsom <- FlowSOM::FlowSOM(ff_mm, compensate = FALSE, scale=FALSE, colsToUse=c, xdim=10, ydim=10, nClus=nClus, seed=42)
+
 PlotPies(fsom, cellTypes=as.factor(meta$meta_group), backgroundValues=fsom$metaclustering)
 PlotPies(fsom, cellTypes=as.factor(meta$meta_label), backgroundValues=fsom$metaclustering)
 
 PlotManualBars(fsom, manualVector = as.factor(meta$meta_group))
 PlotManualBars(fsom, manualVector = as.factor(meta$meta_label))
-dev.off()
 
-FlowSOMmary(fsom, plotFile = "fluor+morph_sommary.pdf")
+# PCA(all cols)
+c <- c(uncorr_cols, biased_fluor_cols, unbiased_fluor_cols, labelfree_cols)
+pca <- prcomp(scale(exprs(ff_mm[,c])))
+pca_ff <- flowFrame(pca$x)
 
-# PCA
-cols <- c(
-  colnames(area$minmax), 
-  colnames(majoraxis$minmax),
-  colnames(minoraxis$minmax),
-  colnames(diameter$minmax),
-  extent$cols,
-  eccentricity$cols
-)
-pca <- prcomp(scale(exprs(ff[,cols])), rank=10)
-pca_ff <- flowFrame(cbind(apply(pca$x, 2, normalize), exprs(ff[,colnames(fluor_mm)])))
-
-cols <- colnames(pca_ff)
-fsom <- FlowSOM::FlowSOM(pca_ff, scale=FALSE, colsToUse=cols, xdim=10, ydim=10, nClus=nClus, seed=42)
+c <- colnames(pca_ff)
+fsom <- FlowSOM::FlowSOM(pca_ff, scale=FALSE, colsToUse=c, xdim=10, ydim=10, nClus=nClus, seed=42)
 
 pdf("fluor+morphpca_pies.pdf")
 PlotPies(fsom, cellTypes=as.factor(meta$meta_group), backgroundValues=fsom$metaclustering)
@@ -123,9 +85,9 @@ FlowSOMmary(fsom, plotFile = "fluor+morphpca_sommary.pdf")
 
 write(GetMetaclusters(fsom), file="fluor+morphpca_metaclusters.txt", ncolumns=1)
 
-# uncorrelated
-cols <- c(colnames(fluor_mm), colnames(uncorr$minmax))
-fsom <- FlowSOM::FlowSOM(ff_uncorr, scale=FALSE, colsToUse=cols, xdim=10, ydim=10, nClus=nClus, seed=42)
+# uncorrelated + intensity
+c <- c(uncorr_cols, biased_fluor_cols, unbiased_fluor_cols, labelfree_cols)
+fsom <- FlowSOM::FlowSOM(ff_mm, scale=FALSE, colsToUse=c, xdim=10, ydim=10, nClus=nClus, seed=42)
 
 pdf("fluor+uncorr_pies.pdf")
 PlotPies(fsom, cellTypes=as.factor(meta$meta_group), backgroundValues=fsom$metaclustering)
@@ -139,14 +101,15 @@ FlowSOMmary(fsom, plotFile = "fluor+uncorr_sommary.pdf")
 
 write(GetMetaclusters(fsom), file="fluor+uncorr_metaclusters.txt", ncolumns=1)
 
-# uncorrelated + pca
-cols <- uncorr$cols
-pca <- prcomp(scale(exprs(ff_uncorr[,cols])))
-pca_ff <- flowFrame(cbind(apply(pca$x, 2, normalize), exprs(ff[,colnames(fluor_mm)])))
-cols <- colnames(pca_ff)
-fsom <- FlowSOM::FlowSOM(pca_ff, scale=FALSE, colsToUse=cols, xdim=10, ydim=10, nClus=nClus, seed=42)
+# PCA(uncorr + intensity)
+c <- c(uncorr_cols, biased_fluor_cols, unbiased_fluor_cols, labelfree_cols)
+pca <- prcomp(scale(exprs(ff_mm[,c])))
+pca_ff <- flowFrame(pca$x)
 
-pdf("fluor+uncorr_pies.pdf")
+c <- colnames(pca_ff)
+fsom <- FlowSOM::FlowSOM(pca_ff, scale=FALSE, colsToUse=c, xdim=10, ydim=10, nClus=nClus, seed=42)
+
+pdf("fluor+morphpca_pies.pdf")
 PlotPies(fsom, cellTypes=as.factor(meta$meta_group), backgroundValues=fsom$metaclustering)
 PlotPies(fsom, cellTypes=as.factor(meta$meta_label), backgroundValues=fsom$metaclustering)
 
@@ -154,9 +117,30 @@ PlotManualBars(fsom, manualVector = as.factor(meta$meta_group))
 PlotManualBars(fsom, manualVector = as.factor(meta$meta_label))
 dev.off()
 
-FlowSOMmary(fsom, plotFile = "fluor+uncorr_sommary.pdf")
+FlowSOMmary(fsom, plotFile = "fluor+morphpca_sommary.pdf")
 
-write(GetMetaclusters(fsom), file="fluor+uncorr_metaclusters.txt", ncolumns=1)
+write(GetMetaclusters(fsom), file="fluor+morphpca_metaclusters.txt", ncolumns=1)
+
+# PCA(uncorr) + intensity
+c <- uncorr_cols
+pca <- prcomp(scale(exprs(ff_mm[,c])))
+pca_ff <- flowFrame(cbind(apply(pca$x, 2, normalize), exprs(ff_mm[, c(unbiased_fluor_cols, biased_fluor_cols, labelfree_cols)])))
+
+c <- colnames(pca_ff)
+fsom <- FlowSOM::FlowSOM(pca_ff, scale=FALSE, colsToUse=c, xdim=10, ydim=10, nClus=nClus, seed=42)
+
+pdf("fluor+morphpca_pies.pdf")
+PlotPies(fsom, cellTypes=as.factor(meta$meta_group), backgroundValues=fsom$metaclustering)
+PlotPies(fsom, cellTypes=as.factor(meta$meta_label), backgroundValues=fsom$metaclustering)
+
+PlotManualBars(fsom, manualVector = as.factor(meta$meta_group))
+PlotManualBars(fsom, manualVector = as.factor(meta$meta_label))
+dev.off()
+
+FlowSOMmary(fsom, plotFile = "fluor+morphpca_sommary.pdf")
+
+write(GetMetaclusters(fsom), file="fluor+morphpca_metaclusters.txt", ncolumns=1)
+
 
 # slingshot
 exp <- SingleCellExperiment(list(fake=matrix(seq(1, nrow(df)), nrow=1)))
