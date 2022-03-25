@@ -1,47 +1,24 @@
-from pathlib import Path
-import os
 import pickle
-
-import numpy
-import pandas
-import pyarrow.parquet as pq
+from pathlib import Path
 
 from xgboost import XGBClassifier
 from sklearn.experimental import enable_halving_search_cv
-from sklearn.preprocessing import LabelEncoder
-from sklearn.model_selection import train_test_split, HalvingRandomSearchCV
+from sklearn.model_selection import HalvingRandomSearchCV
+
+import ehv_parameter_search
 
 
-# LOAD DATA
+data_dir = Path(
+    "/home/maximl/scratch/data/ehv/results/scip/" + 
+    "202202071958"
+)
+pattern = "feat.*(BF1|BF2|DAPI|SSC)$"
 
-df = pq.read_table("/home/maximl/scratch/data/ehv/results/scip/202201311209_Inf/features.parquet").to_pandas()
-df["meta_group"] = df["meta_group"].astype(int)
-df["meta_replicate"] = df["meta_replicate"].astype(int)
-df = df[numpy.load("/home/maximl/scratch/data/ehv/results/scip/202201311209_Inf/columns.npy", allow_pickle=True)]
-index = numpy.load("/home/maximl/scratch/data/ehv/results/scip/202201311209_Inf/index.npy", allow_pickle=True)
-df = df.loc[index]
+Xs_train, y_train = ehv_parameter_search.load(data_dir, pattern)
 
-df = df[df["meta_label"] != "unknown"]
-df = df.set_index(["meta_type", "meta_object_number", "meta_replicate", "meta_group"])
-df["meta_label"] = pandas.Categorical(df["meta_label"], categories=["mcp-_psba+", "mcp+_psba+", "mcp+_psba-", "mcp-_psba-"], ordered=True)
-
-# PREP CLASSIFICATION INPUT
-
-enc = LabelEncoder().fit(df.loc["Inf"]["meta_label"])
-y = enc.transform(df.loc["Inf"]["meta_label"])
-
-# selection of the generic channel features for SCIP
-to_keep = df.filter(regex=".*(BF1|BF2|DAPI|SSC)$").columns
-Xs = df.loc["Inf"][to_keep]
-Xs.shape
-
-# SPLIT DATA
-
-Xs_train, Xs_test, y_train, y_test =  train_test_split(Xs, y, test_size=0.1, random_state=0)
-
-print(Xs_train.shape)
-
-# PARAMETER SEARCH
+with open(data_dir / "ehv_xgb_rfe.pickle", "rb") as fh:
+    rfecv = pickle.load(fh)
+selected = rfecv.get_feature_names_out()
 
 model = XGBClassifier(
     booster="gbtree",
@@ -56,29 +33,28 @@ grid = HalvingRandomSearchCV(
     param_distributions={
         "max_depth": [7, 6, 5, 4, 3, 2],
         "learning_rate": [0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0.05, 0.01],
-        # "n_estimators": [100, 200, 400, 600, 800, 1000],
         "subsample": [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
         "colsample_bytree": [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
     },
     factor=3,
     resource='n_estimators',
     n_candidates=3000,
-    max_resources=1500,
+    max_resources=4500,
     min_resources=2,
     aggressive_elimination=True,
     refit=False,
-    n_jobs=20,
-    cv=3,
+    n_jobs=8,
+    cv=5,
     scoring='balanced_accuracy',
     verbose=3,
     return_train_score=True,
     random_state=0
 ).fit(
-    Xs_train,
+    Xs_train[selected],
     y_train
 )
 
 # STORE RESULTS
 
-with open("grid.pickle", "wb") as fh:
+with open("grid_rfe_xgb.pickle", "wb") as fh:
     pickle.dump(grid, fh)

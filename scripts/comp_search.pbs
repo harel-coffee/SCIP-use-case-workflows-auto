@@ -1,0 +1,15 @@
+#!/bin/bash
+
+#PBS -N ehv_comp_search
+#PBS -l walltime=5:00:00
+#PBS -l mem=40gb
+#PBS -l nodes=1:ppn=40
+
+singularity exec \
+-B ~/projects/ehv-analysis:/code \
+-B ~/vsc_data_vo/datasets:/data \
+docker://maximlippeveld/ehv:scripts \
+bash <<EOF
+	source activate env
+	python /code/scripts/python/components_search.py
+EOF

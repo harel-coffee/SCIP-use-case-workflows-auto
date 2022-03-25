@@ -17,7 +17,7 @@ import scipy
 
 import pyarrow.parquet as pq
 
-from ehv import load as e_load, core
+from ehv import core
 
 plt.rcParams['figure.facecolor'] = 'white'
 

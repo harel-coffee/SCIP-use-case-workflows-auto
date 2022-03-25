@@ -16,13 +16,14 @@ from matplotlib import cm
 import matplotlib
 from importlib import reload
 from ehv import core
-from joblib import load, dump
 from pathlib import Path
 import uuid
 import re
 import scipy
 
-from ehv import load as e_load, core
+import pyarrow.parquet as pq
+
+from ehv import core
 
 plt.rcParams['figure.facecolor'] = 'white'
 
@@ -41,6 +42,8 @@ from matplotlib.colors import Normalize
 import matplotlib.gridspec as gridspec
 
 from scip.masking import threshold, util
+
+import multiprocessing
 
 # Cell
 
@@ -175,7 +178,7 @@ def plot_gate_zarr(sel, df, maxn=200, sort=None, channel=0):
         ax.set_axis_off()
 
 # Cell
-def plot_gate_zarr_channels(selectors, df, maxn=20, sort=None, channel_ind=[0], channel_names=["c"]):
+def plot_gate_zarr_channels(selectors, df, maxn=20, sort=None, mask=False, main_channel=3, smooth=0.75, channel_ind=[0], channel_names=["c"]):
 
     dfs = []
     for i, sel in enumerate(selectors):
@@ -195,6 +198,7 @@ def plot_gate_zarr_channels(selectors, df, maxn=20, sort=None, channel_ind=[0], 
 
     images = {}
     masks = {}
+    values = {}
     extent = numpy.empty(shape=(nchannels, 2), dtype=float)
     extent[:, 0] = numpy.inf
     extent[:, 1] = -numpy.inf
@@ -205,9 +209,8 @@ def plot_gate_zarr_channels(selectors, df, maxn=20, sort=None, channel_ind=[0], 
             pixels = z[r["meta_zarr_idx"]]
             pixels = pixels.reshape(z.attrs["shape"][r["meta_zarr_idx"]])[channel_ind]
 
-            m = threshold.get_mask(dict(pixels=pixels), main=True, main_channel=3, smooth=0.75)
-            m = threshold.get_mask(m, main=False, main_channel=3, smooth=0.75)
-            m = util.remove_regions_touching_border(m, bbox_channel_index=3)
+            m = threshold.get_mask(dict(pixels=pixels), main_channel=main_channel, smooth=smooth)
+            m = util.remove_regions_touching_border(m, bbox_channel_index=main_channel)
 
             minr, minc, maxr, maxc = int(r["meta_bbox_minr"]), int(r["meta_bbox_minc"]), int(r["meta_bbox_maxr"]), int(r["meta_bbox_maxc"])
 
@@ -215,22 +218,28 @@ def plot_gate_zarr_channels(selectors, df, maxn=20, sort=None, channel_ind=[0], 
             masks[r["sel"]] = masks.get(r["sel"], []) + [numpy.where(arr, numpy.nan, arr)]
             images[r["sel"]] = images.get(r["sel"], []) + [m["pixels"][:, minr:maxr, minc:maxc]]
 
-            extent[:, 0] = numpy.min(numpy.array([extent[:, 0], pixels.reshape(nchannels, -1).min(axis=1)]), axis=0)
-            extent[:, 1] = numpy.max(numpy.array([extent[:, 1], pixels.reshape(nchannels, -1).max(axis=1)]), axis=0)
+            p =  numpy.where(arr, pixels[:, minr:maxr, minc:maxc], numpy.nan)
+            extent[:, 0] = numpy.nanmin(numpy.array([extent[:, 0], numpy.nanmin(p.reshape(nchannels, -1), axis=1)]), axis=0)
+            extent[:, 1] = numpy.nanmax(numpy.array([extent[:, 1], numpy.nanmax(p.reshape(nchannels, -1), axis=1)]), axis=0)
 
-    fig = plt.figure(constrained_layout=True, dpi=75, figsize=(10, 2*len(df)))
-    grid = gridspec.GridSpec(len(selectors), 1, figure=fig, hspace=0, wspace=0)
+    fig = plt.figure(dpi=75, figsize=(len(channel_ind)*2.5, len(df)*0.8))
+    grid = gridspec.GridSpec(1, len(selectors), figure=fig, wspace=0.1)
     cmap = plt.get_cmap('viridis')
     norms = [Normalize(vmin=a, vmax=b) for a,b in extent]
 
+    gs = {
+        k: grid[0, k].subgridspec(len(v), nchannels)
+        for k, v in images.items()
+    }
     for k, v in images.items():
-        gs = gridspec.GridSpecFromSubplotSpec(len(v), nchannels, subplot_spec=grid[k, 0], hspace=0, wspace=0)
         for i, image in enumerate(v):
             for j, (p, m, norm) in enumerate(zip(image, masks[k][i], norms)):
-                ax = fig.add_subplot(gs[i, j])
+                ax = plt.Subplot(fig, gs[k][i, j])
                 ax.imshow(cmap(norm(p)))
-                ax.imshow(m, alpha=0.5, cmap="Blues")
+                if mask:
+                    ax.imshow(m, alpha=0.3, cmap="Blues")
                 ax.set_axis_off()
+                fig.add_subplot(ax)
                 if i == 0:
                     ax.set_title(channel_names[j])
 
@@ -247,6 +256,7 @@ def plot_gate_czi(sel, df, maxn=200, sort=None, channel=0):
     fig, axes = plt.subplots(ncols=10, nrows=int(math.ceil(len(df) / 10)), dpi=150)
     axes = axes.ravel()
     i = 0
+
     for path, gdf in df.groupby(["meta_path"]):
         ai = AICSImage(path, reconstruct_mosaic=False)
         for scene, gdf2 in gdf.groupby(["meta_scene"]):
@@ -255,6 +265,7 @@ def plot_gate_czi(sel, df, maxn=200, sort=None, channel=0):
                 print(tile, scene, path)
                 for (idx, r) in gdf3.iterrows():
                     ax = axes[i]
+
                     pixels = ai.get_image_data("XY", Z=0, T=0, C=channel, M=tile)
                     minr, minc, maxr, maxc = int(r["meta_bbox_minr"]), int(r["meta_bbox_minc"]), int(r["meta_bbox_maxr"]), int(r["meta_bbox_maxc"])
 
