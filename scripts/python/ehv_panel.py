@@ -21,8 +21,8 @@ def load_fake():
 
     df = pandas.DataFrame({
         "index": numpy.arange(n),
-        "meta_label": numpy.random.choice([0,1,2,3], size=n),
-        "meta_type": numpy.random.choice([0,1], size=n),
+        "meta_label": numpy.random.choice(["c1", "c2", "c3"], size=n),
+        "meta_type": numpy.random.choice(["ctrl", "inf"], size=n),
         "feat_area": numpy.random.normal(loc=0, scale=2, size=n),
         "dim_1": numpy.random.normal(loc=-1, scale=1.5, size=n),
         "dim_2": numpy.random.normal(loc=2, scale=1, size=n)
@@ -90,8 +90,8 @@ scat = holoviews.DynamicMap(
 datashaded = hd.datashade(scat, aggregator=datashader.count())
 spreaded = hd.dynspread(datashaded, threshold=0.50, how='over')
 
-bar1 = df.hvplot.hist("meta_label")
-bar2 = df.hvplot.hist("meta_type")
+bar1 = holoviews.Bars(df, kdims=["meta_type"]).aggregate(function=len)
+bar2 = holoviews.Bars(df, kdims=["meta_label"]).aggregate(function=len)
 
 link = link_selections.instance()
 
