@@ -42,7 +42,7 @@ def load():
 
         cat_type = CategoricalDtype(
             categories=sorted(df["meta_group"].astype(int).unique()), ordered=True)
-        df["meta_group"] = df["meta_group"].astype(int).astype(cat_type)
+        df["meta_group"] = df["meta_group"].astype(int)#.astype(cat_type)
         df["meta_replicate"] = df["meta_replicate"].astype(int)
 
         df = df.set_index(
@@ -52,11 +52,11 @@ def load():
         df = df.loc[numpy.load(data_dir / "index.npy", allow_pickle=True)]
 
         df = df[df["meta_label"] != "unknown"]
-        df["meta_label"] = pandas.Categorical(
-            df["meta_label"],
-            categories=["mcp-_psba+", "mcp+_psba+", "mcp+_psba-", "mcp-_psba-"],
-            ordered=True
-        )
+        # df["meta_label"] = pandas.Categorical(
+        #     df["meta_label"],
+        #     categories=["mcp-_psba+", "mcp+_psba+", "mcp+_psba-", "mcp-_psba-"],
+        #     ordered=True
+        # )
 
         sel1 = ~(
             (df.index.get_level_values("meta_group").isin([6,7,8,9])) &
