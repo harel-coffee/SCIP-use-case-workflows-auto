@@ -11,6 +11,7 @@ from pandas.api.types import CategoricalDtype
 import holoviews.operation.datashader as hd
 from holoviews.selection import link_selections
 import datashader
+import time
 
 
 data_dir = Path("/vsc/datasets/weizmann/EhV/v2/results/scip/202202071958/")
@@ -35,7 +36,7 @@ def load():
     from joblib import dump, load
 
     if (data_dir / "dump.joblib").exists():
-        return load(data_dir / "dump.joblib")
+        df = load(data_dir / "dump.joblib")
 
     else:
         df = pq.read_table(data_dir / "features.parquet").to_pandas()
@@ -68,33 +69,40 @@ def load():
         df["dim_1"] = dimred[:, 0]
         df["dim_2"] = dimred[:, 1]
 
-        dump(df.reset_index(), data_dir / "dump.joblib")
+        df = df.reset_index()
 
-        return df.reset_index()
+        dump(df, data_dir / "dump.joblib")
+
+    return df
 
 
 def scatter(value):
     points = holoviews.Points(df, kdims=["dim_1", "dim_2"])
     return points.opts(color=value)
 
+start = time.time()
 df = load()
 # df = load_fake()
+print("Data loading (%ds)" % (time.time() - start))
 
 autocomplete = panel.widgets.AutocompleteInput(
     name='Scatter hue', options=df.columns.tolist(),
     placeholder='Start typing here', value="meta_label")
 
+start = time.time()
 scat = holoviews.DynamicMap(
     scatter, streams=[autocomplete.param.value]
 )
-datashaded = hd.datashade(scat, aggregator=datashader.count())
-spreaded = hd.dynspread(datashaded, threshold=0.50, how='over')
+datashaded = hd.rasterize(scat, aggregator=datashader.count())
+print("Dimred scatter (%ds)" % (time.time() - start))
 
+start = time.time()
 bar1 = holoviews.Bars(df, kdims=["meta_type"]).aggregate(function=len)
 bar2 = holoviews.Bars(df, kdims=["meta_label"]).aggregate(function=len)
+print("Bar plots (%ds)" % (time.time() - start))
 
 link = link_selections.instance()
 
 panel.Column(
-    panel.Row(panel.Column(autocomplete, link(spreaded)), panel.Column(link(bar1), link(bar2))),
+    panel.Row(panel.Column(autocomplete, link(datashaded)), panel.Column(link(bar1), link(bar2))),
 ).servable()
