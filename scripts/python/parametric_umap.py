@@ -3,13 +3,12 @@ import pyarrow.parquet as pq
 from pathlib import Path
 from umap.parametric_umap import ParametricUMAP
 from tensorflow import keras
-from tensorflow.keras import layers
+from sklearn.model_selection import train_test_split
 
 
 DATA_DIR = Path("/home/maximl/scratch/data/cd7/800/results/scip/202203221745/")
-WIDTH = 109
-HEIGHT = 112
-SCALE = 2
+WIDTH = 28
+HEIGHT = 28
 
 
 def main():
@@ -21,34 +20,62 @@ def main():
     df = df.sort_index()
     df = df.loc[idx]
 
-    X = numpy.load(DATA_DIR / "neutrophil_images_scale2.npy")
+    X = numpy.load(DATA_DIR / "neutrophil_images_scale_mnist.npy")
     X = numpy.swapaxes(X, 1, -1)
+
+    # select channels
+    X = X[..., 0]
+
     X = X.reshape(X.shape[0], -1)
 
-    dims = (WIDTH // SCALE, HEIGHT // SCALE, 3)
+    dims = (WIDTH, HEIGHT, 1)
     n_components = 2
 
-    base_model = keras.applications.MobileNetV2(
-        input_shape=dims, weights = 'imagenet', include_top = False)
-    base_model.trainable = False
+    encoder = keras.Sequential([
+        keras.layers.InputLayer(input_shape=dims),
+        keras.layers.Conv2D(
+            filters=32, kernel_size=3, strides=(2, 2), activation="relu", padding="same"
+        ),
+        keras.layers.Conv2D(
+            filters=64, kernel_size=3, strides=(2, 2), activation="relu", padding="same"
+        ),
+        keras.layers.Flatten(),
+        keras.layers.Dense(units=256, activation="relu"),
+        keras.layers.Dense(units=256, activation="relu"),
+        keras.layers.Dense(units=n_components),
+    ])
+    decoder = keras.Sequential([
+        keras.layers.InputLayer(input_shape=(n_components)),
+        keras.layers.Dense(units=256, activation="relu"),
+        keras.layers.Dense(units=7 * 7 * 256, activation="relu"),
+        keras.layers.Reshape(target_shape=(7, 7, 256)),
+        keras.layers.Conv2DTranspose(
+        filters=128, kernel_size=3, strides=(2, 2), padding="SAME", activation="relu"
+        ),
+        keras.layers.Conv2DTranspose(
+            filters=64, kernel_size=3, strides=(2, 2), padding="SAME", activation="relu"
+        ),
+        keras.layers.Conv2DTranspose(
+            filters=1, kernel_size=3, strides=(1, 1), padding="SAME", activation="sigmoid"
+        )
+    ])
 
-    x = base_model.output
-    x = layers.GlobalAveragePooling2D()(x)
-    x = layers.Dense(512, activation='relu')(x)
-    x = layers.Dense(n_components)(x)
-
-    encoder = keras.Model(inputs=base_model.input, outputs=x)
+    train_idx, test_idx = train_test_split(numpy.arange(len(X)), test_size=0.1)
 
     embedder = ParametricUMAP(
         encoder=encoder,
+        decoder=decoder,
         dims=dims,
         n_components=n_components,
+        parametric_reconstruction=True,
+        reconstruction_validation=X[test_idx],
+        autoencoder_loss=True,
         verbose=True,
-        n_training_epochs=1
+        n_training_epochs=10
     )
-    embedding = embedder.fit_transform(X)
+    embedding = embedder.fit_transform(X[train_idx])
 
-    output_dir = DATA_DIR / "embeddings/param_umap/202203241023_scale2_mobilenetv2"
+    output_dir = DATA_DIR / "embeddings/param_umap/202203241023_scalemnist_example"
     output_dir.mkdir(parents=True, exist_ok=True)
     numpy.save(output_dir / "embedding.npy", embedding)
     embedder.save(output_dir / "model")
