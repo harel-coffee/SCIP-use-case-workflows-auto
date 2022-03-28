@@ -8,17 +8,22 @@ import os
 from skimage.transform import rescale
 
 
-WIDTH=109
+WIDTH=112
 HEIGHT=112
+
+TARGET_WIDTH=28
+TARGET_HEIGHT=28
+
+SCALE = WIDTH / TARGET_WIDTH
+
 CHANNELS=[4,5,6]
 NORM_FEATS = ["feat_max_Bright", "feat_max_Oblique", "feat_max_PGC"]
 DATA_DIR = Path("/home/maximl/scratch/data/cd7/800/results/scip/202203221745/")
-SCALE = 2
 
 
 def cropND(x):
 
-    bounding = (len(CHANNELS), WIDTH // SCALE, HEIGHT // SCALE)
+    bounding = (len(CHANNELS), WIDTH, HEIGHT)
   
     # compute possibly necessary padding widths
     padding = tuple(map(lambda a,b: abs(min(0, b-a)), bounding, x.shape))
@@ -55,7 +60,7 @@ def load_cells(df):
     norm = numpy.array([df[feat].max() for feat in NORM_FEATS])
 
     arr = numpy.empty(
-        shape=(len(df), len(CHANNELS), WIDTH // SCALE, HEIGHT // SCALE), dtype=numpy.float32)
+        shape=(len(df), len(CHANNELS), TARGET_WIDTH, TARGET_HEIGHT), dtype=numpy.float32)
 
     for i, (idx, row) in enumerate(df.iterrows()):
         bbox = int(row.meta_bbox_minr), int(row.meta_bbox_minc), int(row.meta_bbox_maxr), int(row.meta_bbox_maxc)
@@ -96,7 +101,7 @@ def main():
 
     arr = numpy.concatenate(results, axis=0)
     print(arr.shape)
-    numpy.save(DATA_DIR / "neutrophil_images_scale2.npy", arr)
+    numpy.save(DATA_DIR / "neutrophil_images_scale_mnist.npy", arr)
 
 
 if __name__ == "__main__":
