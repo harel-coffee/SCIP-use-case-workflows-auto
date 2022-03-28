@@ -70,9 +70,9 @@ def load_cells(df):
             pixels[:, bbox[0]:bbox[2], bbox[1]:bbox[3]],
             0
         ) / norm[:, numpy.newaxis, numpy.newaxis]
-        tmp = rescale(tmp, channel_axis=0, scale=1/SCALE, preserve_range=True)
+        tmp = cropND(tmp) 
 
-        arr[i] = cropND(tmp)
+        arr[i] = rescale(tmp, channel_axis=0, scale=1/SCALE, preserve_range=True)
 
     return arr
 
