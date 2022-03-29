@@ -5,11 +5,19 @@ from pathlib import Path
 import multiprocessing
 import operator
 import os
+from skimage.transform import rescale
 
 
-WIDTH=109
+WIDTH=112
 HEIGHT=112
+
+TARGET_WIDTH=28
+TARGET_HEIGHT=28
+
+SCALE = WIDTH / TARGET_WIDTH
+
 CHANNELS=[4,5,6]
+NORM_FEATS = ["feat_max_Bright", "feat_max_Oblique", "feat_max_PGC"]
 DATA_DIR = Path("/home/maximl/scratch/data/cd7/800/results/scip/202203221745/")
 
 
@@ -49,7 +57,10 @@ def load_cells(df):
     pixels = im.get_image_data("CZXY", T=0, C=CHANNELS)
     pixels = numpy.max(pixels, axis=1)
 
-    arr = numpy.empty(shape=(len(df), len(CHANNELS), WIDTH, HEIGHT), dtype=int)
+    norm = numpy.array([df[feat].max() for feat in NORM_FEATS])
+
+    arr = numpy.empty(
+        shape=(len(df), len(CHANNELS), TARGET_WIDTH, TARGET_HEIGHT), dtype=numpy.float32)
 
     for i, (idx, row) in enumerate(df.iterrows()):
         bbox = int(row.meta_bbox_minr), int(row.meta_bbox_minc), int(row.meta_bbox_maxr), int(row.meta_bbox_maxc)
@@ -58,7 +69,8 @@ def load_cells(df):
             mask[bbox[0]:bbox[2], bbox[1]:bbox[3]] == idx[-1],
             pixels[:, bbox[0]:bbox[2], bbox[1]:bbox[3]],
             0
-        )
+        ) / norm[:, numpy.newaxis, numpy.newaxis]
+        tmp = rescale(tmp, channel_axis=0, scale=1/SCALE, preserve_range=True)
 
         arr[i] = cropND(tmp)
 
@@ -89,7 +101,7 @@ def main():
 
     arr = numpy.concatenate(results, axis=0)
     print(arr.shape)
-    numpy.save(DATA_DIR / "neutrophil_images.npy", arr)
+    numpy.save(DATA_DIR / "neutrophil_images_scale_mnist.npy", arr)
 
 
 if __name__ == "__main__":

@@ -7,8 +7,9 @@ from tensorflow.keras import layers
 
 
 DATA_DIR = Path("/home/maximl/scratch/data/cd7/800/results/scip/202203221745/")
-WIDTH=109
-HEIGHT=112
+WIDTH = 109
+HEIGHT = 112
+SCALE = 2
 
 
 def main():
@@ -20,22 +21,23 @@ def main():
     df = df.sort_index()
     df = df.loc[idx]
 
-    X = numpy.load(DATA_DIR / "neutrophil_images.npy")
+    X = numpy.load(DATA_DIR / "neutrophil_images_scale2.npy")
     X = numpy.swapaxes(X, 1, -1)
     X = X.reshape(X.shape[0], -1)
 
-    dims = (WIDTH, HEIGHT, 3)
+    dims = (WIDTH // SCALE, HEIGHT // SCALE, 3)
     n_components = 2
 
-    encoder = keras.Sequential([
-        layers.Input(shape=dims),
-        layers.Conv2D(16, (3, 3), activation='relu', padding='same', strides=2),
-        layers.Conv2D(8, (3, 3), activation='relu', padding='same', strides=2),
-        layers.Flatten(),
-	layers.Dense(512),
-	layers.Dense(512),
-        layers.Dense(n_components)
-    ])
+    base_model = keras.applications.MobileNetV2(
+        input_shape=dims, weights = 'imagenet', include_top = False)
+    base_model.trainable = False
+
+    x = base_model.output
+    x = layers.GlobalAveragePooling2D()(x)
+    x = layers.Dense(512, activation='relu')(x)
+    x = layers.Dense(n_components)(x)
+
+    encoder = keras.Model(inputs=base_model.input, outputs=x)
 
     embedder = ParametricUMAP(
         encoder=encoder,
@@ -46,8 +48,10 @@ def main():
     )
     embedding = embedder.fit_transform(X)
 
-    numpy.save(DATA_DIR / "embeddings/paramumap2.dat", embedding)
-    embedder.save(DATA_DIR / "models/paramumap2")
+    output_dir = DATA_DIR / "embeddings/param_umap/202203241023_scale2_mobilenetv2"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    numpy.save(output_dir / "embedding.npy", embedding)
+    embedder.save(output_dir / "model")
 
 
 if __name__ == "__main__":
