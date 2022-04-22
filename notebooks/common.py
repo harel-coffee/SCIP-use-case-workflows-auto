@@ -15,6 +15,8 @@ import uuid
 import re
 import scipy
 
+from pandas.api.types import CategoricalDtype
+
 import pyarrow.parquet as pq
 
 from ehv import core
