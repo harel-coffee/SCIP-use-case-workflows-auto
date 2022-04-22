@@ -1,0 +1,13 @@
+#!/bin/bash
+
+#PBS -l walltime=10:00:00
+#PBS -l nodes=1:ppn=10
+#PBS -l mem=32gb
+
+module load SciPy-bundle/2021.10-foss-2021b
+
+export PYTHONPATH="${VSC_DATA}/python_lib_${VSC_INSTITUTE_CLUSTER}/lib/python3.9/site-packages/:${PYTHONPATH}"
+export NUMBA_NUM_THREADS=10
+
+python $VSC_HOME/projects/weizmann-ehv-analysis/scripts/python/ehv_louvain_optuna.py
+
