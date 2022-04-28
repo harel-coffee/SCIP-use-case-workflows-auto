@@ -7,8 +7,8 @@ import pyarrow.parquet as pq
 from xgboost import XGBClassifier
 from sklearn.preprocessing import LabelEncoder
 from sklearn.feature_selection import RFE
-from sklearn.model_selection import train_test_split, HalvingRandomSearchCV
 from sklearn.experimental import enable_halving_search_cv
+from sklearn.model_selection import train_test_split, HalvingRandomSearchCV
 from imblearn.over_sampling import RandomOverSampler
 from imblearn.under_sampling import RandomUnderSampler
 from imblearn.pipeline import make_pipeline
