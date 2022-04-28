@@ -3,6 +3,7 @@ import pickle
 
 import numpy
 import pyarrow.parquet as pq
+import pandas
 
 from xgboost import XGBClassifier
 from sklearn.preprocessing import LabelEncoder
@@ -18,19 +19,20 @@ from imblearn.pipeline import make_pipeline
 
 data_dir = Path("/home/maximl/scratch/data/wbc/results/scip/202204271347")
 
-df = pq.read_table(data_dir / "features.parquet").to_pandas()
+df = pq.read_table(data_dir / f"features.parquet").to_pandas()
 
-df["meta_group"] = df["meta_group"].astype(int)
-df["meta_part"] = df["meta_part"].astype(int)
+df["meta_group"]= pandas.Categorical(df["meta_group"].astype(int), ordered=True)
+df["meta_part"]= pandas.Categorical(df["meta_part"].astype(int), ordered=True)
 
-df = df.set_index(["meta_object_number", "meta_part", "meta_group", "meta_fix"])
-df = df[numpy.load(data_dir / "columns.npy", allow_pickle=True)]
-index = numpy.load(data_dir / "index.npy", allow_pickle=True)
-df = df.loc[index]
+df = df.set_index(["meta_group", "meta_part", "meta_fix", "meta_object_number"])
 
-df = df[~df["meta_bbox_minr"].isna()]
+df = df[numpy.load(
+    data_dir / "indices/columns.npy", allow_pickle=True)]
+df = df.loc[numpy.load(
+    data_dir / "indices/index.npy", allow_pickle=True)]
+
+df["meta_label"] = pandas.Categorical(df["meta_label"], ordered=True)
 df = df[df["meta_label"] != "unknown"]
-
 df = df.fillna(0)
 
 # PREP CLASSIFICATION INPUT
