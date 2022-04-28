@@ -7,17 +7,16 @@ import pyarrow.parquet as pq
 from xgboost import XGBClassifier
 from sklearn.preprocessing import LabelEncoder
 from sklearn.feature_selection import RFE
-from sklearn.model_selection import train_test_split, RandomizedSearchCV, HalvingRandomSearchCV
+from sklearn.model_selection import train_test_split, HalvingRandomSearchCV
 from sklearn.experimental import enable_halving_search_cv
 from imblearn.over_sampling import RandomOverSampler
+from imblearn.under_sampling import RandomUnderSampler
 from imblearn.pipeline import make_pipeline
 
 
 # LOAD DATA
 
-data_dir = Path(
-    "/home/maximl/scratch/data/wbc/results/scip/"
-)
+data_dir = Path("/home/maximl/scratch/data/wbc/results/scip/202204271347")
 
 df = pq.read_table(data_dir / "features.parquet").to_pandas()
 
@@ -36,9 +35,6 @@ df = df.fillna(0)
 
 # PREP CLASSIFICATION INPUT
 
-# neuts = df[df["meta_label"] == "CD15 + Neutrophils"].sample(n=110000).index
-# df = df.drop(labels=neuts)
-
 enc = LabelEncoder().fit(df["meta_label"])
 y = enc.transform(df["meta_label"])
 
@@ -53,6 +49,7 @@ Xs_train, Xs_test, y_train, y_test =  train_test_split(
 # PARAMETER SEARCH
 
 model = make_pipeline(
+    RandomUnderSampler(sampling_strategy="majority", random_state=0),
     RandomOverSampler(sampling_strategy="not majority", random_state=0),
     RFE(
         XGBClassifier(
@@ -60,7 +57,8 @@ model = make_pipeline(
             objective="multi:softmax",
             eval_metric="merror",
             tree_method="gpu_hist",
-            use_label_encoder=False
+            use_label_encoder=False,
+            random_state=0
         )
     )
 )
@@ -100,8 +98,7 @@ grid = HalvingRandomSearchCV(
         "rfe__estimator__learning_rate": [0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0.05, 0.01],
         "rfe__estimator__subsample": [0.25, 0.5, 0.75, 1],
         "rfe__estimator__colsample_bytree": [0.25, 0.5, 0.75, 1],
-        "rfe__n_features_to_select": [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1],
-        "randomoversampler__sampling_strategy": ["not majority", dict()]
+        "rfe__n_features_to_select": [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]
     },
     factor=3,
     resource='n_estimators',
@@ -123,5 +120,5 @@ grid = HalvingRandomSearchCV(
 
 # STORE RESULTS
 
-with open(data_dir / "rhs/grid.pickle", "wb") as fh:
+with open(data_dir / "rsh/grid.pickle", "wb") as fh:
     pickle.dump(grid, fh)
