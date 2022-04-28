@@ -17,9 +17,10 @@ from imblearn.pipeline import make_pipeline
 
 # LOAD DATA
 
-data_dir = Path("/home/maximl/scratch/data/wbc/results/scip/202204271347")
+data_dir = Path("/home/maximl/scratch/data/vsc/datasets/wbc/results/scip/202204271347/")
 
 df = pq.read_table(data_dir / f"features.parquet").to_pandas()
+df = df.fillna(0)
 
 df["meta_group"]= pandas.Categorical(df["meta_group"].astype(int), ordered=True)
 df["meta_part"]= pandas.Categorical(df["meta_part"].astype(int), ordered=True)
@@ -33,7 +34,6 @@ df = df.loc[numpy.load(
 
 df["meta_label"] = pandas.Categorical(df["meta_label"], ordered=True)
 df = df[df["meta_label"] != "unknown"]
-df = df.fillna(0)
 
 # PREP CLASSIFICATION INPUT
 
@@ -45,8 +45,11 @@ Xs = df.filter(regex="(BF1|BF2|SSC)$")
 
 # SPLIT DATA
 
-Xs_train, Xs_test, y_train, y_test =  train_test_split(
+Xs_train, _, y_train, _ =  train_test_split(
     Xs, y, stratify=y, test_size=1/3, random_state=0)
+
+Xs_tain, _, y_train, _ = train_test_split(
+    Xs_train, y_train, stratify=y_train, test_size=1/2, random_state=0)
 
 # PARAMETER SEARCH
 
@@ -103,13 +106,13 @@ grid = HalvingRandomSearchCV(
         "rfe__n_features_to_select": [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]
     },
     factor=3,
-    resource='n_estimators',
-    n_candidates=3000,
-    max_resources=4500,
+    resource='rfe__estimator__n_estimators',
+    n_candidates=1500,
+    max_resources=3000,
     min_resources=2,
     aggressive_elimination=True,
     refit=False,
-    n_jobs=8,
+    n_jobs=12,
     cv=5,
     scoring='balanced_accuracy',
     verbose=3,
