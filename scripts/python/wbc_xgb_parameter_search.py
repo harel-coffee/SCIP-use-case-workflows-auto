@@ -98,12 +98,13 @@ grid = HalvingRandomSearchCV(
         "xgbclassifier__learning_rate": [0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0.05, 0.01],
         "xgbclassifier__subsample": numpy.linspace(start=0.1, stop=1, num=10),
         "xgbclassifier__colsample_bytree": numpy.linspace(start=0.1, stop=1, num=10),
-	    "xgbclassifier__n_estimators": numpy.logspace(6, 12, base=2, num=7, dtype=int)
+	    # "xgbclassifier__n_estimators": numpy.logspace(6, 12, base=2, num=7, dtype=int)
     },
     factor=2,
-    resource='n_samples',
+    resource='xgbclassifier__n_estimators',
     n_candidates=5000,
-    min_resources=1000,
+    min_resources=2,
+    max_resources=4096,
     aggressive_elimination=False,
     refit=False,
     n_jobs=12,
@@ -119,5 +120,5 @@ grid = HalvingRandomSearchCV(
 
 # STORE RESULTS
 
-with open(data_dir / "rsh/grid.pickle", "wb") as fh:
+with open(data_dir / "rsh/grid2.pickle", "wb") as fh:
     pickle.dump(grid, fh)
