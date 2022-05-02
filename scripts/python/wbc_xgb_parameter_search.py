@@ -7,7 +7,6 @@ import pandas
 
 from xgboost import XGBClassifier
 from sklearn.preprocessing import LabelEncoder
-from sklearn.feature_selection import RFE
 from sklearn.experimental import enable_halving_search_cv
 from sklearn.model_selection import train_test_split, HalvingRandomSearchCV
 from imblearn.over_sampling import RandomOverSampler
@@ -20,12 +19,13 @@ from imblearn.pipeline import make_pipeline
 data_dir = Path("/home/maximl/scratch/data/vsc/datasets/wbc/results/scip/202204271347/")
 
 df = pq.read_table(data_dir / f"features.parquet").to_pandas()
-df = df.fillna(0)
 
 df["meta_group"]= pandas.Categorical(df["meta_group"].astype(int), ordered=True)
 df["meta_part"]= pandas.Categorical(df["meta_part"].astype(int), ordered=True)
 
 df = df.set_index(["meta_group", "meta_part", "meta_fix", "meta_object_number"])
+
+# df = df.fillna(0)
 
 df = df[numpy.load(
     data_dir / "indices/columns.npy", allow_pickle=True)]
@@ -46,25 +46,20 @@ Xs = df.filter(regex="(BF1|BF2|SSC)$")
 # SPLIT DATA
 
 Xs_train, _, y_train, _ =  train_test_split(
-    Xs, y, stratify=y, test_size=1/3, random_state=0)
-
-Xs_tain, _, y_train, _ = train_test_split(
-    Xs_train, y_train, stratify=y_train, test_size=1/2, random_state=0)
+    Xs, y, stratify=y, test_size=0.2, random_state=0)
 
 # PARAMETER SEARCH
 
 model = make_pipeline(
     RandomUnderSampler(sampling_strategy="majority", random_state=0),
     RandomOverSampler(sampling_strategy="not majority", random_state=0),
-    RFE(
-        XGBClassifier(
-            booster="gbtree",
-            objective="multi:softmax",
-            eval_metric="merror",
-            tree_method="gpu_hist",
-            use_label_encoder=False,
-            random_state=0
-        )
+    XGBClassifier(
+        booster="gbtree",
+        objective="multi:softmax",
+        eval_metric="merror",
+        tree_method="gpu_hist",
+        use_label_encoder=False,
+        random_state=0
     )
 )
 
@@ -99,18 +94,17 @@ model = make_pipeline(
 grid = HalvingRandomSearchCV(
     estimator=model,
     param_distributions={
-        "rfe__estimator__max_depth": [6, 5, 4, 3, 2],
-        "rfe__estimator__learning_rate": [0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0.05, 0.01],
-        "rfe__estimator__subsample": [0.25, 0.5, 0.75, 1],
-        "rfe__estimator__colsample_bytree": [0.25, 0.5, 0.75, 1],
-        "rfe__n_features_to_select": [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]
+        "xgbclassifier__max_depth": [6, 5, 4, 3, 2],
+        "xgbclassifier__learning_rate": [0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0.05, 0.01],
+        "xgbclassifier__subsample": numpy.linspace(start=0.1, stop=1, num=10),
+        "xgbclassifier__colsample_bytree": numpy.linspace(start=0.1, stop=1, num=10),
+	    "xgbclassifier__n_estimators": numpy.logspace(6, 12, base=2, num=7, dtype=int)
     },
-    factor=3,
-    resource='rfe__estimator__n_estimators',
-    n_candidates=1500,
-    max_resources=3000,
-    min_resources=2,
-    aggressive_elimination=True,
+    factor=2,
+    resource='n_samples',
+    n_candidates=5000,
+    min_resources=1000,
+    aggressive_elimination=False,
     refit=False,
     n_jobs=12,
     cv=5,
