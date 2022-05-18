@@ -4,171 +4,186 @@ library(arrow, quietly = TRUE)
 library(slingshot, quietly = TRUE)
 library(SingleCellExperiment, quietly = TRUE)
 library(RColorBrewer, quietly = TRUE)
+library(ggplot2, quietly = TRUE)
+library(tidyr)
+library(dplyr)
+source('/data/dev/active/analysis/weizmann-ehv-analysis/scripts/R/PlotDimRed.R')
 
-df <- arrow::read_feather("cells.feather")
+pca <- function(mat) {
+  mat.pr <- prcomp(mat, center = TRUE, scale = TRUE)
+  cumpro <- cumsum(mat.pr$sdev^2 / sum(mat.pr$sdev^2))
+  pc_keep <- sum(cumpro < 0.95)+1 # explain 95% variance
+  return(mat.pr$x[, colnames(mat.pr$x)[0:pc_keep]])
+}
 
-exprs <- df[grep("^feat", names(df))]
-exprs[is.na(exprs)] <- 0
-exprs <- exprs[,!apply(exprs, MARGIN = 2, function(x) max(x, na.rm = TRUE) == min(x, na.rm = TRUE))]
-exprs <- as.matrix(exprs)
-
-meta <- df[grep("^meta", names(df))]
-
-biased_fluor_cols <- colnames(exprs)[grep("^feat_bgcorr_sum.*(Cy5|TMR)", colnames(exprs))]
-unbiased_fluor_cols <- colnames(exprs)[grep("^feat_bgcorr_sum_(DAPI)", colnames(exprs))]
-labelfree_cols <- colnames(exprs)[grep("^feat_bgcorr_sum_(BF|SSC)", colnames(exprs))]
-cols <- colnames(exprs)[!colnames(exprs) %in% c(biased_fluor_cols, unbiased_fluor_cols, labelfree_cols)]
-uncorr_cols <- scan("uncorrelated_cols.txt", what="character")
-uncorr_cols <- uncorr_cols[!uncorr_cols %in% c(biased_fluor_cols, unbiased_fluor_cols, labelfree_cols)]
-
-normalize <- function(x, na.rm = TRUE) {
+minmax <- function(x, na.rm = TRUE) {
   return((x- min(x)) /(max(x)-min(x)))
 }
 
+quant_quant <- function(x, na.rm = TRUE, probs = c(0.01, 0.99)) {
+  qq <- quantile(x, probs)
+  return((x - qq[1]) /(qq[2] - qq[1]))
+}
+
+zscore <- function(x, na.rm = TRUE) {
+  return (x - mean(x)) / std(x)
+}
+
+robust <- function(x, na.rm = TRUE) {
+  return (x - median(x)) / mad(x)
+}
+
+plot_clusters <- function(ff, fsom) {
+  cols <- all_of(colnames(ff))
+  
+  cells_long <- pivot_longer(as.data.frame(exprs(ff)), 
+                             cols = cols,
+                             names_to = "Feature", values_to = "Value")
+  clusters_long <- pivot_longer(as.data.frame(GetClusterMFIs(fsom)), 
+                                cols = cols,
+                                names_to = "Feature", values_to = "Value") 
+  metaclusters_long <- pivot_longer(GetMetaclusterMFIs(fsom), 
+                                    cols = cols,
+                                    names_to = "Feature", values_to = "Value") 
+  
+  colors <- c("Cells" = "#fdcc8a", "Clusters" = "black", "Metaclusters" = "#e34a33")
+  cells_long%>% 
+    ggplot(aes(x = Feature, y = Value)) +
+    geom_violin(aes(color = "Cells", fill = "Cells")) +
+    ggbeeswarm::geom_quasirandom(aes(color = "Clusters"), data = clusters_long, size = 0.5) +
+    ggbeeswarm::geom_quasirandom(aes(color = "Metaclusters"), data = metaclusters_long) +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 90)) +
+    scale_color_manual(values = colors, name = "")+
+    scale_fill_manual(values = colors, name = "") +
+    guides(fill = FALSE)
+}
+
+do_flowsom <- function(ff, nClus, nDim, out) {
+  
+  out = sprintf("%s_%d_%d", out, nClus, nDim)
+  
+  fsom <- FlowSOM::FlowSOM(ff, compensate = FALSE, scale=FALSE, xdim=nDim, ydim=nDim, nClus=nClus, seed=42)
+  
+  pdf(sprintf("fsom/%s.pdf", out))
+  
+  print(PlotPies(fsom, cellTypes=as.factor(meta$meta_group), backgroundValues=fsom$metaclustering))
+  print(PlotPies(fsom, cellTypes=as.factor(meta$meta_label), backgroundValues=fsom$metaclustering))
+  
+  print(PlotDimRed(fsom, dimred=umap, colorBy = "metaclusters"))
+  print(PlotDimRed(fsom, dimred=umap, colorBy = "clusters"))
+  
+  data <- cbind(umap, meta$meta_label)
+  colnames(data) <- c("umap_0", "umap_1", "label")
+  p <- ggplot2::ggplot(data) +
+    scattermore::geom_scattermore(ggplot2::aes(x = .data$umap_0,
+                                               y = .data$umap_1,
+                                               col = .data$label),
+                                  pointsize = 1) +
+    ggplot2::theme_minimal() +
+    ggplot2::coord_fixed()
+  print(p)
+  
+  PlotManualBars(fsom, manualVector = as.factor(meta$meta_group))
+  PlotManualBars(fsom, manualVector = as.factor(meta$meta_label))
+  
+  dev.off()
+  
+  return(fsom)
+}
+
+ClusterPurity <- function(clusters, classes) {
+  sum(apply(table(classes, clusters), 2, max)) / length(clusters)
+}
+
+
+## COMPARISON OF SCALINGS
+
+df <- arrow::read_feather("cells.feather")
+df2 <- arrow::read_feather("slingshot.feather")
+
+meta <- df[grep("^meta", names(df))]
+umap <- df2[grep("^umap", names(df2))]
+
+exprs <- df[grep("^feat", names(df))]
+exprs[is.na(exprs)] <- 0
+
+# remove zero variance columns
+exprs <- exprs[,!apply(exprs, MARGIN = 2, function(x) max(x, na.rm = TRUE) == min(x, na.rm = TRUE))]
+
+exprs <- as.matrix(exprs)
+
+# logicle transform of sum features
 ff <- flowFrame(exprs)
-trans <- flowCore::estimateLogicle(ff, channels = c("feat_bgcorr_sum_Cy5", "feat_bgcorr_sum_DAPI"))
-ff <- flowWorkspace::transform(ff, trans)
-trans <- transformList("feat_bgcorr_sum_TMR", logicleTransform(w=1.3))
-ff <- flowWorkspace::transform(ff, trans)
+log_cols <- colnames(ff)[c(grep("sum", colnames(ff)), grep("max", colnames(ff)))]
+transformList <- flowCore::estimateLogicle(ff, channels = log_cols)
+ff <- flowWorkspace::transform(ff, transformList)
 
-ff_mm <- flowFrame(apply(exprs(ff), 2, normalize))
+exprs <- exprs(ff)
 
-nClus <- 15
-
-# biased fluor only
-fsom <- FlowSOM::FlowSOM(ff, compensate = FALSE, scale=FALSE, colsToUse=biased_fluor_cols, xdim=10, ydim=10, nClus=nClus, seed=42)
-
-pdf("fluor_pies.pdf")
-PlotPies(fsom, cellTypes=as.factor(meta$meta_group), backgroundValues=fsom$metaclustering)
-PlotPies(fsom, cellTypes=as.factor(meta$meta_label), backgroundValues=fsom$metaclustering)
-
-PlotManualBars(fsom, manualVector = as.factor(meta$meta_group))
-PlotManualBars(fsom, manualVector = as.factor(meta$meta_label))
-dev.off()
-
-FlowSOMmary(fsom, plotFile = "fluor_sommary.pdf")
-
-write(GetMetaclusters(fsom), file="fluor_metaclusters.txt", ncolumns=1)
-
-# all intensity
-c <- c(biased_fluor_cols, unbiased_fluor_cols, labelfree_cols)
-fsom <- FlowSOM::FlowSOM(ff_mm, compensate = FALSE, scale=FALSE, colsToUse=c, xdim=10, ydim=10, nClus=nClus, seed=42)
-PlotPies(fsom, cellTypes=as.factor(meta$meta_label), backgroundValues=fsom$metaclustering)
-
-# all cols
-c <- c(cols, biased_fluor_cols, unbiased_fluor_cols, labelfree_cols)
-fsom <- FlowSOM::FlowSOM(ff_mm, compensate = FALSE, scale=FALSE, colsToUse=c, xdim=10, ydim=10, nClus=nClus, seed=42)
-
-PlotPies(fsom, cellTypes=as.factor(meta$meta_group), backgroundValues=fsom$metaclustering)
-PlotPies(fsom, cellTypes=as.factor(meta$meta_label), backgroundValues=fsom$metaclustering)
-
-PlotManualBars(fsom, manualVector = as.factor(meta$meta_group))
-PlotManualBars(fsom, manualVector = as.factor(meta$meta_label))
-
-# PCA(all cols)
-c <- c(uncorr_cols, biased_fluor_cols, unbiased_fluor_cols, labelfree_cols)
-pca <- prcomp(scale(exprs(ff_mm[,c])))
-pca_ff <- flowFrame(pca$x)
-
-c <- colnames(pca_ff)
-fsom <- FlowSOM::FlowSOM(pca_ff, scale=FALSE, colsToUse=c, xdim=10, ydim=10, nClus=nClus, seed=42)
-
-pdf("fluor+morphpca_pies.pdf")
-PlotPies(fsom, cellTypes=as.factor(meta$meta_group), backgroundValues=fsom$metaclustering)
-PlotPies(fsom, cellTypes=as.factor(meta$meta_label), backgroundValues=fsom$metaclustering)
-
-PlotManualBars(fsom, manualVector = as.factor(meta$meta_group))
-PlotManualBars(fsom, manualVector = as.factor(meta$meta_label))
-dev.off()
-
-FlowSOMmary(fsom, plotFile = "fluor+morphpca_sommary.pdf")
-
-write(GetMetaclusters(fsom), file="fluor+morphpca_metaclusters.txt", ncolumns=1)
-
-# uncorrelated + intensity
-c <- c(uncorr_cols, biased_fluor_cols, unbiased_fluor_cols, labelfree_cols)
-fsom <- FlowSOM::FlowSOM(ff_mm, scale=FALSE, colsToUse=c, xdim=10, ydim=10, nClus=nClus, seed=42)
-
-pdf("fluor+uncorr_pies.pdf")
-PlotPies(fsom, cellTypes=as.factor(meta$meta_group), backgroundValues=fsom$metaclustering)
-PlotPies(fsom, cellTypes=as.factor(meta$meta_label), backgroundValues=fsom$metaclustering)
-
-PlotManualBars(fsom, manualVector = as.factor(meta$meta_group))
-PlotManualBars(fsom, manualVector = as.factor(meta$meta_label))
-dev.off()
-
-FlowSOMmary(fsom, plotFile = "fluor+uncorr_sommary.pdf")
-
-write(GetMetaclusters(fsom), file="fluor+uncorr_metaclusters.txt", ncolumns=1)
-
-# PCA(uncorr + intensity)
-c <- c(uncorr_cols, biased_fluor_cols, unbiased_fluor_cols, labelfree_cols)
-pca <- prcomp(scale(exprs(ff_mm[,c])))
-pca_ff <- flowFrame(pca$x)
-
-c <- colnames(pca_ff)
-fsom <- FlowSOM::FlowSOM(pca_ff, scale=FALSE, colsToUse=c, xdim=10, ydim=10, nClus=nClus, seed=42)
-
-pdf("fluor+morphpca_pies.pdf")
-PlotPies(fsom, cellTypes=as.factor(meta$meta_group), backgroundValues=fsom$metaclustering)
-PlotPies(fsom, cellTypes=as.factor(meta$meta_label), backgroundValues=fsom$metaclustering)
-
-PlotManualBars(fsom, manualVector = as.factor(meta$meta_group))
-PlotManualBars(fsom, manualVector = as.factor(meta$meta_label))
-dev.off()
-
-FlowSOMmary(fsom, plotFile = "fluor+morphpca_sommary.pdf")
-
-write(GetMetaclusters(fsom), file="fluor+morphpca_metaclusters.txt", ncolumns=1)
-
-# PCA(uncorr) + intensity
-c <- uncorr_cols
-pca <- prcomp(scale(exprs(ff_mm[,c])))
-pca_ff <- flowFrame(cbind(apply(pca$x, 2, normalize), exprs(ff_mm[, c(unbiased_fluor_cols, biased_fluor_cols, labelfree_cols)])))
-
-c <- colnames(pca_ff)
-fsom <- FlowSOM::FlowSOM(pca_ff, scale=FALSE, colsToUse=c, xdim=10, ydim=10, nClus=nClus, seed=42)
-
-pdf("fluor+morphpca_pies.pdf")
-PlotPies(fsom, cellTypes=as.factor(meta$meta_group), backgroundValues=fsom$metaclustering)
-PlotPies(fsom, cellTypes=as.factor(meta$meta_label), backgroundValues=fsom$metaclustering)
-
-PlotManualBars(fsom, manualVector = as.factor(meta$meta_group))
-PlotManualBars(fsom, manualVector = as.factor(meta$meta_label))
-dev.off()
-
-FlowSOMmary(fsom, plotFile = "fluor+morphpca_sommary.pdf")
-
-write(GetMetaclusters(fsom), file="fluor+morphpca_metaclusters.txt", ncolumns=1)
-
-
-# slingshot
-exp <- SingleCellExperiment(list(fake=matrix(seq(1, nrow(df)), nrow=1)))
-reducedDims(exp) <- list(
-  PCA = pca$x
-)
-colData(exp)$cluster <- GetClusters(fs)
-
-res <- slingshot(
-  data = exp,
-  clusterLabels = "cluster",
-  reducedDim = "PCA",
-  approx_points = 150,
-  start.clus = c(5, 7),
-  end.clus = 4
+X <- list(
+  exprs,
+  apply(exprs, 2, minmax),
+  apply(exprs, 2, quant_quant, probs = c(0.01, 0.99)),
+  apply(exprs, 2, quant_quant, probs = c(0.05, 0.95)),
+  apply(exprs, 2, zscore),
+  apply(exprs, 2, robust),
+  pca(exprs),
+  pca(apply(exprs, 2, minmax)),
+  pca(apply(exprs, 2, quant_quant, probs = c(0.01, 0.99))),
+  pca(apply(exprs, 2, quant_quant, probs = c(0.05, 0.95))),
+  pca(apply(exprs, 2, zscore)),
+  pca(apply(exprs, 2, robust))
 )
 
-embed_res <- embedCurves(
-  res,
-  reducedDims(exp)$PCA[,1:2],
-  approx_points = 150
+nClus <- 4
+nDim <- 10
+
+ids <- c(
+  "noop",
+  "minmax",
+  "qq1-99",
+  "qq5-95",
+  "zscore",
+  "robust",
+  "pca_noop",
+  "pca_minmax",
+  "pca_qq1-99",
+  "pca_qq5-95",
+  "pca_zscore",
+  "pca_robust"
 )
 
-colors <- colorRampPalette(brewer.pal(11,'Spectral')[-6])(100)
-plotcol <- colors[cut(res$slingPseudotime_1, breaks=100)]
+fsoms <- c()
+for (i in 1:length(ids)) {
+  print(ids[i])
+  fsoms[[i]] <- do_flowsom(flowFrame(X[[i]]), nClus, nDim, ids[i])
+}
 
-plot(reducedDims(exp)$PCA, col = plotcol, pch=16, asp = 1)
-lines(SlingshotDataSet(res), lwd=2, col='black')
+purities <- unlist(map(fsoms, function(x) {ClusterPurity(GetMetaclusters(x), meta$meta_label)}))
 
-plot(reducedDims(exp)$PCA, col = plotcol, pch=16, asp = 1)
-lines(SlingshotDataSet(res), lwd=2, type = 'lineages', col = 'black')
+id <- 2
+ff <- flowFrame(X[[id]])
+plot_clusters(ff, fsoms[[id]])
+
+
+## MINMAX + ISO preproc
+df <- arrow::read_feather("cells_scaled.feather")
+df2 <- arrow::read_feather("slingshot.feather")
+
+meta <- df[grep("^meta", names(df))]
+umap <- df2[grep("^umap", names(df2))]
+
+exprs <- df[grep("^feat", names(df))]
+exprs <- as.matrix(exprs)
+
+ff <- flowFrame(exprs)
+fsom <- do_flowsom(ff, nClus = 20, nDim = 10, out ="mm_iso_pre")
+plot_clusters(ff, fsom)
+ClusterPurity(GetMetaclusters(fsom), meta$meta_label)
+write(GetMetaclusters(fsom), file="fsom/metaclusters_mm_iso_pre_20_10.txt", ncolumns=1)
+
+ff <- flowFrame(pca(exprs))
+fsom <- do_flowsom(ff, nClus = 20, nDim = 10, out ="mm_iso_pre_pca")
+plot_clusters(ff, fsom)
+ClusterPurity(GetMetaclusters(fsom), meta$meta_label)
