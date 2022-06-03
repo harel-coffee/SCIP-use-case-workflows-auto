@@ -51,7 +51,6 @@ Xs_train, _, y_train, _ =  train_test_split(
 # PARAMETER SEARCH
 
 model = make_pipeline(
-    RandomUnderSampler(sampling_strategy="majority", random_state=0),
     RandomOverSampler(sampling_strategy="not majority", random_state=0),
     XGBClassifier(
         booster="gbtree",
@@ -95,30 +94,29 @@ grid = HalvingRandomSearchCV(
     estimator=model,
     param_distributions={
         "xgbclassifier__max_depth": [6, 5, 4, 3, 2],
-        "xgbclassifier__learning_rate": [0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0.05, 0.01],
+        "xgbclassifier__learning_rate": [0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0.05, 0.01, 0.001],
         "xgbclassifier__subsample": numpy.linspace(start=0.1, stop=1, num=10),
         "xgbclassifier__colsample_bytree": numpy.linspace(start=0.1, stop=1, num=10),
-	    # "xgbclassifier__n_estimators": numpy.logspace(6, 12, base=2, num=7, dtype=int)
     },
-    factor=2,
-    resource='xgbclassifier__n_estimators',
-    n_candidates=5000,
+    factor=3,
+    resource='n_estimators',
+    n_candidates=3000,
+    max_resources=4500,
     min_resources=2,
-    max_resources=4096,
-    aggressive_elimination=False,
+    aggressive_elimination=True,
     refit=False,
-    n_jobs=12,
+    n_jobs=8,
     cv=5,
     scoring='balanced_accuracy',
     verbose=3,
     return_train_score=True,
     random_state=0
 ).fit(
-    Xs_train,
+    Xs_train[selected],
     y_train
 )
 
 # STORE RESULTS
 
-with open(data_dir / "rsh/grid2.pickle", "wb") as fh:
+with open(data_dir / "rsh/grid_n_estimators_onlyover.pickle", "wb") as fh:
     pickle.dump(grid, fh)
