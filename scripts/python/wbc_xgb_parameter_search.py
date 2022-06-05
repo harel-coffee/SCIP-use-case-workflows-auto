@@ -98,11 +98,11 @@ grid = HalvingRandomSearchCV(
         "xgbclassifier__subsample": numpy.linspace(start=0.1, stop=1, num=10),
         "xgbclassifier__colsample_bytree": numpy.linspace(start=0.1, stop=1, num=10),
     },
-    factor=3,
+    factor=2,
     resource='n_estimators',
-    n_candidates=3000,
-    max_resources=4500,
-    min_resources=2,
+    n_candidates=1000,
+    max_resources=3000,
+    min_resources=10,
     aggressive_elimination=True,
     refit=False,
     n_jobs=8,
@@ -118,5 +118,5 @@ grid = HalvingRandomSearchCV(
 
 # STORE RESULTS
 
-with open(data_dir / "rsh/grid_n_estimators_onlyover.pickle", "wb") as fh:
+with open(data_dir / "rsh/grid_n_estimators_onlyover_start10.pickle", "wb") as fh:
     pickle.dump(grid, fh)
