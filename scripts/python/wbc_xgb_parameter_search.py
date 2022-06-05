@@ -99,7 +99,7 @@ grid = HalvingRandomSearchCV(
         "xgbclassifier__colsample_bytree": numpy.linspace(start=0.1, stop=1, num=10),
     },
     factor=3,
-    resource='n_estimators',
+    resource='xgbclassifier__n_estimators',
     n_candidates=3000,
     max_resources=4500,
     min_resources=2,
@@ -112,7 +112,7 @@ grid = HalvingRandomSearchCV(
     return_train_score=True,
     random_state=0
 ).fit(
-    Xs_train[selected],
+    Xs_train,
     y_train
 )
 
