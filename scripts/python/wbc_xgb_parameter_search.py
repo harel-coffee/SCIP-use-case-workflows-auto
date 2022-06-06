@@ -51,6 +51,7 @@ Xs_train, _, y_train, _ =  train_test_split(
 # PARAMETER SEARCH
 
 model = make_pipeline(
+    RandomUnderSampler(sampling_strategy="majority", random_state=0),
     RandomOverSampler(sampling_strategy="not majority", random_state=0),
     XGBClassifier(
         booster="gbtree",
@@ -118,5 +119,5 @@ grid = HalvingRandomSearchCV(
 
 # STORE RESULTS
 
-with open(data_dir / "rsh/grid_n_estimators_onlyover_start10.pickle", "wb") as fh:
+with open(data_dir / "rsh/grid_n_estimators_overunder_start10.pickle", "wb") as fh:
     pickle.dump(grid, fh)
