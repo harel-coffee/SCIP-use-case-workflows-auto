@@ -25,16 +25,16 @@ df["meta_part"]= pandas.Categorical(df["meta_part"].astype(int), ordered=True)
 
 df = df.set_index(["meta_group", "meta_part", "meta_fix", "meta_object_number"])
 
-# drop samples not used in CytoA
-df = df.drop('late', level="meta_fix")
-df = df.drop(2, level="meta_group")
-
 # df = df.fillna(0)
 
 df = df[numpy.load(
     data_dir / "indices/columns.npy", allow_pickle=True)]
 df = df.loc[numpy.load(
     data_dir / "indices/index.npy", allow_pickle=True)]
+
+# drop samples not used in CytoA
+df = df.drop('late', level="meta_fix")
+df = df.drop(2, level="meta_group")
 
 df["meta_label"] = pandas.Categorical(df["meta_label"], ordered=True)
 df = df[df["meta_label"] != "unknown"]
@@ -123,5 +123,5 @@ grid = HalvingRandomSearchCV(
 
 # STORE RESULTS
 
-with open(data_dir / "rsh/grid_n_estimators_overunder_start10.pickle", "wb") as fh:
+with open(data_dir / "rsh/grid_n_estimators_overunder_start10_nolate.pickle", "wb") as fh:
     pickle.dump(grid, fh)
