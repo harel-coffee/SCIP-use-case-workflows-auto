@@ -2,13 +2,14 @@
 
 __all__ = ["index", "modules", "custom_doc_links", "git_url"]
 
-index = {"get_logicle_xform": "1e_viral_infection_progression.ipynb",
-         "logicle_transform": "1e_viral_infection_progression.ipynb",
-         "compare_features": "ehv_feature_comparison.ipynb",
+index = {"compare_features": "ehv_feature_comparison.ipynb",
          "entropy": "ehv_feature_distributions_after_rfe.ipynb",
          "minmax": "ehv_feature_distributions_after_rfe.ipynb",
          "robust": "ehv_feature_distributions_after_rfe.ipynb",
          "qq": "ehv_feature_distributions_after_rfe.ipynb",
+         "dists": "ehv_feature_distributions_after_rfe.ipynb",
+         "get_logicle_xform": "ehv_viral_infection_progression.ipynb",
+         "logicle_transform": "ehv_viral_infection_progression.ipynb",
          "load_config": "00_core.ipynb",
          "load_from_sqlite_db": "00_core.ipynb",
          "add_gating_table": "00_core.ipynb",
@@ -45,12 +46,11 @@ index = {"get_logicle_xform": "1e_viral_infection_progression.ipynb",
          "GroupedTransformer": "3c_preprocessing_pipeline_low.ipynb",
          "ColumnTransformer": "3c_preprocessing_pipeline_low.ipynb",
          "PandasVarianceThreshold": "3c_preprocessing_pipeline_low.ipynb",
-         "make_pipeline_1": "3c_preprocessing_pipeline_ctrl.ipynb",
-         "dists": "ehv_feature_distributions_after_rfe.ipynb"}
+         "make_pipeline_1": "3c_preprocessing_pipeline_ctrl.ipynb"}
 
-modules = ["viral.py",
-           "feature_comparison.py",
+modules = ["feature_comparison.py",
            "normalization.py",
+           "viral.py",
            "core.py",
            "masking.py",
            "load.py",
