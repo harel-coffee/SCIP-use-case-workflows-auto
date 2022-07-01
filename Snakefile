@@ -24,7 +24,7 @@ rule quality_control:
         "{data}/scip/{run}/indices/columns.npy",
         "{data}/scip/{run}/indices/index.npy",
     log:
-        notebook="{data}/scip/{run}/notebooks/QC/{config[set]}_quality_control.ipynb"
+        notebook="{data}/scip/{run}/notebooks/QC/quality_control.ipynb"
     notebook:
         "notebooks/QC/{config[set]}_quality_control.ipynb"
 
@@ -49,7 +49,7 @@ rule WBC_IFC_SCIP:
             allow_missing=True,
         ),
     shell:
-        "scip --mode mpi ... {input.config} {wildcards.data}/scip/{wildcards.run} {input.path}"
+        "scip --mode mpi {input.config} {wildcards.data}/scip/{wildcards.run} {input.path}"
 
 
 rule WBC_IFC_classification:
