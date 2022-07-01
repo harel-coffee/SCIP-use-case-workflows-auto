@@ -31,7 +31,9 @@ rule quality_control:
 
 rule hyperparameter_optimization:
     input:
-        "{data}/scip/{run}/features.parquet",
+        features="{data}/scip/{run}/features.parquet"
+        columns="{data}/scip/{run}/indices/columns.npy"
+        index="{data}/scip/{run}/indices/index.npy"
     output:
         "{data}/scip/{run}/grid/rsh.pickle",
     script:
