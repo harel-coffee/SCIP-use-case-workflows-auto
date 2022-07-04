@@ -8,7 +8,7 @@ rule preprocessing:
         ),
         data_dir="{data}/scip/{run}"
     output:
-        "{data}/scip/{run}/features.parquet",
+        "{data}/scip/{run}/features.parquet"
     conda:
         "environment.yml"
     log:
@@ -31,13 +31,19 @@ rule quality_control:
 
 rule hyperparameter_optimization:
     input:
-        features="{data}/scip/{run}/features.parquet"
-        columns="{data}/scip/{run}/indices/columns.npy"
+        features="{data}/scip/{run}/features.parquet",
+        columns="{data}/scip/{run}/indices/columns.npy",
         index="{data}/scip/{run}/indices/index.npy"
     output:
         "{data}/scip/{run}/grid/rsh.pickle",
+    params:
+        set=config["set"]
+    log:
+        "{data}/scip/{run}/log/hyperparameter_optimization.log"
+    conda:
+        "environment.yml"
     script:
-        "scripts/python/{config[set]}_xgb_parameter_search.py"
+        "scripts/python/{params.set}_xgb_parameter_search.py"
 
 
 rule WBC_IFC_SCIP:
@@ -45,11 +51,11 @@ rule WBC_IFC_SCIP:
         path="{data}/images/",
         config="{data}/scip.yml",
     output:
-        expand(
+        temp(expand(
             "{data}/scip/{run}/features.{part}.parquet",
             part=range(5),
             allow_missing=True,
-        ),
+        ))
     shell:
         "scip --mode mpi {input.config} {wildcards.data}/scip/{wildcards.run} {input.path}"
 
