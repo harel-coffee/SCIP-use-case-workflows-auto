@@ -2,73 +2,58 @@
 rule preprocessing:
     input:
         files=expand(
-            "{data}/scip/{run}/features.{part}.parquet",
+            "{data}/features.{part}.parquet",
             part=range(5),
             allow_missing=True,
         ),
-        data_dir="{data}/scip/{run}"
+        data_dir="{data}"
     output:
-        "{data}/scip/{run}/features.parquet"
+        "{data}/features.parquet"
     conda:
         "environment.yml"
     log:
-        notebook="{data}/scip/{run}/notebooks/QC/processing_scip_features.ipynb"
+        notebook="{data}/notebooks/QC/processing_scip_features.ipynb"
     notebook:
         "notebooks/preprocessing/{config[set]}_processing_scip_features.ipynb"
 
 
 rule quality_control:
     input:
-        "{data}/scip/{run}/features.parquet",
+        "{data}/features.parquet",
     output:
-        "{data}/scip/{run}/indices/columns.npy",
-        "{data}/scip/{run}/indices/index.npy",
+        "{data}/indices/columns.npy",
+        "{data}/indices/index.npy",
     log:
-        notebook="{data}/scip/{run}/notebooks/QC/quality_control.ipynb"
+        notebook="{data}/notebooks/QC/quality_control.ipynb"
     notebook:
         "notebooks/QC/{config[set]}_quality_control.ipynb"
 
-
 rule hyperparameter_optimization:
     input:
-        features="{data}/scip/{run}/features.parquet",
-        columns="{data}/scip/{run}/indices/columns.npy",
-        index="{data}/scip/{run}/indices/index.npy"
+        features="{data}/features.parquet",
+        columns="{data}/indices/columns.npy",
+        index="{data}/indices/index.npy"
     output:
-        "{data}/scip/{run}/grid/rsh.pickle",
+        "{data}/hpo/{grid}.pickle",
     params:
-        set=config["set"]
+        set=config["set"],
+        grid="{grid}"
     log:
-        "{data}/scip/{run}/log/hyperparameter_optimization.log"
+        "{data}/log/hyperparameter_optimization_{grid}.log"
     conda:
         "environment.yml"
     script:
         "scripts/python/{params.set}_xgb_parameter_search.py"
 
-
-rule WBC_IFC_SCIP:
-    input:
-        path="{data}/images/",
-        config="{data}/scip.yml",
-    output:
-        temp(expand(
-            "{data}/scip/{run}/features.{part}.parquet",
-            part=range(5),
-            allow_missing=True,
-        ))
-    shell:
-        "scip --mode mpi {input.config} {wildcards.data}/scip/{wildcards.run} {input.path}"
-
-
 rule WBC_IFC_classification:
     input:
-        features="{data}/scip/{run}/features.parquet",
-        columns="{data}/scip/{run}/indices/columns.npy",
-        index="{data}/scip/{run}/indices/index.npy",
-        hpo_grid="{data}/scip/{run}/grid/rsh.pickle",
+        features="{data}/features.parquet",
+        columns="{data}/indices/columns.npy",
+        index="{data}/indices/index.npy",
+        hpo_grid="{data}/grid/rsh.pickle",
     output:
-        "{data}/scip/{run}/models/xgb.pickle",
+        "{data}/models/xgb.pickle",
     log:
-        notebook="{data}/scip/{run}/notebooks/QC/downstream_analysis/Stain-free Leukocyte Prediction.ipynb"
+        notebook="{data}/notebooks/QC/downstream_analysis/Stain-free Leukocyte Prediction.ipynb"
     notebook:
         "notebooks/downstream_analysis/Stain-free Leukocyte Prediction.ipynb"

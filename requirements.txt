@@ -8,10 +8,8 @@ click
 optuna
 scikit-learn
 jupyterlab
-pyyaml
 xgboost
 imbalanced-learn
-dask-labextension
 ipympl
 plotly
 flowutils
