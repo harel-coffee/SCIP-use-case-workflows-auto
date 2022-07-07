@@ -67,10 +67,11 @@ else:
     param_distributions = {
         "xgbclassifier__max_depth": [6, 5, 4, 3, 2],
         "xgbclassifier__learning_rate": [0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0.05, 0.01, 0.001],
-        "xgbclassifier__subsample": numpy.linspace(start=0.1, stop=1, num=10),
-        "xgbclassifier__colsample_bytree": numpy.linspace(start=0.1, stop=1, num=10),
-        "xgbclassifier__gamma": numpy.arange(start=0, stop=30, step=2),
-        "xgbclassifier__min_child_weight": numpy.arange(start=1, stop=31, step=2)
+        "xgbclassifier__subsample": numpy.arange(start=0.1, stop=1.1, step=.1),
+        "xgbclassifier__colsample_bytree": numpy.arange(start=0.1, stop=1.1, step=.1),
+        "xgbclassifier__gamma": numpy.arange(start=0, stop=31, step=2),
+        "xgbclassifier__min_child_weight": numpy.arange(start=1, stop=32, step=2),
+        "xgbclassifier__n_estimators": numpy.arange(start=10, stop=301, step=10)
     }
     resource = 'n_samples'
 
