@@ -34,12 +34,14 @@ rule hyperparameter_optimization:
         columns="{data}/indices/columns.npy",
         index="{data}/indices/index.npy"
     output:
-        "{data}/hpo/{grid}.pickle",
+        "{data}/hpo/{grid}_{full}.pickle",
     params:
         set=config["set"],
         grid="{grid}"
+    threads:
+        10
     log:
-        "{data}/log/hyperparameter_optimization_{grid}.log"
+        "{data}/log/hyperparameter_optimization_{grid}_{full}.log"
     conda:
         "environment.yml"
     script:

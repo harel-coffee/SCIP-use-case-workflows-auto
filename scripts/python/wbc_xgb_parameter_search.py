@@ -8,7 +8,7 @@ import pandas
 from xgboost import XGBClassifier
 from sklearn.preprocessing import LabelEncoder
 from sklearn.experimental import enable_halving_search_cv
-from sklearn.model_selection import cross_validate, HalvingRandomSearchCV, RandomizedSearchCV
+from sklearn.model_selection import StratifiedKFold, cross_validate, HalvingRandomSearchCV, RandomizedSearchCV
 from imblearn.over_sampling import RandomOverSampler
 from imblearn.under_sampling import RandomUnderSampler
 from imblearn.pipeline import make_pipeline
@@ -33,8 +33,9 @@ df = df[numpy.load(snakemake.input.columns, allow_pickle=True)]
 df = df.loc[numpy.load(snakemake.input.index, allow_pickle=True)]
 
 # drop samples not used in CytoA
-# df = df.drop('late', level="meta_fix")
-# df = df.drop(2, level="meta_group")
+if snakemake.wildcards["full"] == "cyto":
+    df = df.drop('late', level="meta_fix")
+    df = df.drop(2, level="meta_group")
 
 df["meta_label"] = pandas.Categorical(df["meta_label"], ordered=True)
 df = df[df["meta_label"] != "unknown"]
@@ -79,9 +80,9 @@ if snakemake.params["grid"] == "random":
     grid = RandomizedSearchCV(
         estimator=model,
         param_distributions=param_distributions,
-        n_iter=1500,
+        n_iter=500,
         refit=True,
-        n_jobs=16,
+        n_jobs=snakemake.threads,
         cv=5,
         scoring='balanced_accuracy',
         verbose=2,
@@ -93,13 +94,13 @@ else:
     grid = HalvingRandomSearchCV(
         estimator=model,
         param_distributions=param_distributions,
-        factor=1.55,
+        factor=2,
         resource=resource,
-        n_candidates=1500,
+        n_candidates=500,
         min_resources=5000,
         aggressive_elimination=False,
         refit=True,
-        n_jobs=16,
+        n_jobs=snakemake.threads,
         cv=5,
         scoring='balanced_accuracy',
         verbose=2,
@@ -109,8 +110,8 @@ else:
 
 scores = cross_validate(
     grid, Xs, y,
-    scoring=('balanced_accuracy', 'f1_macro', 'f1_micro', 'precision_macro', 'precision_micro', 'recall_macro', 'recall_micro'),
-    cv=5,
+    scoring=('balanced_accuracy', 'f1_macro', 'precision_macro', 'recall_macro'),
+    cv=StratifiedKFold(n_splits=5, shuffle=True, random_state=0),
     return_train_score=True,
     return_estimator=True
 )
