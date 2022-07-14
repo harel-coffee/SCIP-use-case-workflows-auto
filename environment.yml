@@ -1,11 +1,15 @@
 name: env
 channels:
       - conda-forge
-      - fastai
 dependencies:
-      - python=3
-      - umap-learn
-      - nbdev
-      - nodejs
-      - dask
-      - numpy
+      - python=3.9
+      - pyarrow
+      - pandas
+      - jupyter
+      - pip:
+            - scip
+            - numpy
+            - scikit-learn
+            - pyarrow
+            - xgboost
+            - imbalanced-learn
