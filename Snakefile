@@ -19,10 +19,13 @@ rule preprocessing:
 
 rule quality_control:
     input:
-        "{data}/features.parquet",
+        features="{data}/features.parquet",
+        data_dir="{data}"
     output:
         "{data}/indices/columns.npy",
         "{data}/indices/index.npy",
+    conda:
+        "environment.yml"
     log:
         notebook="{data}/notebooks/QC/quality_control.ipynb"
     notebook:
@@ -35,6 +38,8 @@ rule hyperparameter_optimization:
         index="{data}/indices/index.npy"
     output:
         "{data}/hpo/{grid}_{full}.pickle",
+    conda:
+        "environment.yml"
     params:
         set=config["set"],
         grid="{grid}"
@@ -55,7 +60,24 @@ rule WBC_IFC_classification:
         hpo_grid="{data}/grid/rsh.pickle",
     output:
         "{data}/models/xgb.pickle",
+    conda:
+        "environment.yml"
     log:
-        notebook="{data}/notebooks/QC/downstream_analysis/Stain-free Leukocyte Prediction.ipynb"
+        notebook="{data}/notebooks/Stain-free Leukocyte Prediction.ipynb"
     notebook:
-        "notebooks/downstream_analysis/Stain-free Leukocyte Prediction.ipynb"
+        "notebooks/Stain-free Leukocyte Prediction.ipynb"
+
+rule WBC_CD7_clustering:
+    input:
+        features="{data}/features.parquet",
+        columns="{data}/indices/columns.npy",
+        index="{data}/indices/index.npy",
+    output:
+        "{data}/figures/cluster_annotation.png"
+    conda:
+        "environment.yml"
+    log:
+        notebook="{data}/Leukocyte clustering.ipynb"
+    notebook:
+        "notebooks/Leukocyte clustering.ipynb"
+

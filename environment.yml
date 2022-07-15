@@ -6,6 +6,9 @@ dependencies:
       - pyarrow
       - pandas
       - jupyter
+      - scanpy
+      - python-igraph
+      - leidenalg
       - pip:
             - scip
             - numpy
@@ -13,3 +16,5 @@ dependencies:
             - pyarrow
             - xgboost
             - imbalanced-learn
+            - flowutils
+            - kneed
