@@ -13,3 +13,8 @@ dependencies:
             - pyarrow
             - xgboost
             - imbalanced-learn
+            - seaborn
+            - tifffile
+            - zarr
+            - aicsimageio
+            - aicspylibczi
