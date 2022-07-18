@@ -28,7 +28,7 @@ df = df.loc[numpy.load(snakemake.input.index, allow_pickle=True)]
 # drop samples not used in CytoA
 if snakemake.wildcards["full"] == "cyto":
     df = df.drop('late', level="meta_fix")
-    df = df.drop(2, level="meta_group")
+    df = df.drop(0, level="meta_group")
     
 df = df.merge(labels, left_index=True, right_index=True)
 df = df[df["meta_label"] != "unknown"]
@@ -75,7 +75,7 @@ if snakemake.params["grid"] == "random":
     grid = RandomizedSearchCV(
         estimator=model,
         param_distributions=param_distributions,
-        n_iter=500,
+        n_iter=int(snakemake.config["n"]),
         refit=True,
         n_jobs=snakemake.threads,
         cv=5,
@@ -91,7 +91,7 @@ else:
         param_distributions=param_distributions,
         factor=2,
         resource=resource,
-        n_candidates=500,
+        n_candidates=int(snakemake.config["n"]),
         min_resources=5000,
         aggressive_elimination=False,
         refit=True,

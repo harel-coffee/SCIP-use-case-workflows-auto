@@ -1,11 +1,10 @@
 rule preprocessing:
     input:
-        files=expand(
+        expand(
             "{data}/features.{part}.parquet",
             part=range(10),
-            allow_missing=True,
-        ),
-        data_dir="{data}"
+            allow_missing=True
+        )
     output:
         "{data}/features.parquet"
     conda:
@@ -14,24 +13,6 @@ rule preprocessing:
         notebook="{data}/notebooks/preprocessing/processing_scip_features.ipynb"
     notebook:
         "notebooks/preprocessing/{config[set]}_processing_scip_features.ipynb"
-
-
-# rule WBC_IFC_preprocessing:
-#     input:
-#         files=expand(
-#             "{data_root}/{data_postfix}/features.{part}.parquet",
-#             part=range(10),
-#             allow_missing=True,
-#         ),
-#         data_dir="{data_root}/{data_postfix}",
-#     output:
-#         "{data_root}/{data_postfix}/features.parquet"
-#     conda:
-#         "environment.yml"
-#     log:
-#         notebook="{data_root}/{data_postfix}/notebooks/preprocessing/processing_scip_features.ipynb"
-#     notebook:
-#         "notebooks/preprocessing/wbc_processing_scip_features.ipynb"
 
 
 rule WBC_IFC_labels:
@@ -60,6 +41,16 @@ rule quality_control:
         notebook="{data}/notebooks/QC/quality_control.ipynb"
     notebook:
         "notebooks/QC/{config[set]}_quality_control.ipynb"
+
+
+rule all_hyperparameter_optimization:
+    input:
+        expand(
+            "{data}/hpo/{grid}_{full}.pickle",
+            full=["full", "cyto"],
+            grid=["rsh", "random"],
+            data=config["data"]
+        )
 
 
 rule hyperparameter_optimization:
