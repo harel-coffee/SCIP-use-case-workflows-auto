@@ -15,17 +15,10 @@ from imblearn.pipeline import make_pipeline
 
 from sklearn.dummy import DummyClassifier
 
-
 # LOAD DATA
 
-data_dir = Path()
-
 df = pq.read_table(snakemake.input.features).to_pandas()
-
-df["meta_group"]= pandas.Categorical(df["meta_group"].astype(int), ordered=True)
-df["meta_part"]= pandas.Categorical(df["meta_part"].astype(int), ordered=True)
-
-df = df.set_index(["meta_group", "meta_part", "meta_fix", "meta_object_number"])
+labels = pq.read_table(snakemake.input.labels).to_pandas()
 
 # df = df.fillna(0)
 
@@ -35,10 +28,12 @@ df = df.loc[numpy.load(snakemake.input.index, allow_pickle=True)]
 # drop samples not used in CytoA
 if snakemake.wildcards["full"] == "cyto":
     df = df.drop('late', level="meta_fix")
-    df = df.drop(2, level="meta_group")
-
-df["meta_label"] = pandas.Categorical(df["meta_label"], ordered=True)
+    df = df.drop(0, level="meta_group")
+    
+df = df.merge(labels, left_index=True, right_index=True)
 df = df[df["meta_label"] != "unknown"]
+
+print(df.shape)
 
 # PREP CLASSIFICATION INPUT
 
@@ -80,7 +75,7 @@ if snakemake.params["grid"] == "random":
     grid = RandomizedSearchCV(
         estimator=model,
         param_distributions=param_distributions,
-        n_iter=500,
+        n_iter=int(snakemake.config["n"]),
         refit=True,
         n_jobs=snakemake.threads,
         cv=5,
@@ -96,7 +91,7 @@ else:
         param_distributions=param_distributions,
         factor=2,
         resource=resource,
-        n_candidates=500,
+        n_candidates=int(snakemake.config["n"]),
         min_resources=5000,
         aggressive_elimination=False,
         refit=True,

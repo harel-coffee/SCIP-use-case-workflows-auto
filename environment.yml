@@ -16,5 +16,11 @@ dependencies:
             - pyarrow
             - xgboost
             - imbalanced-learn
+            - seaborn
+            - tifffile
+            - zarr
+            - aicsimageio
+            - aicspylibczi
             - flowutils
             - kneed
+            - git+https://github.ugent.be/mlippeve/weizmann-ehv-analysis.git@multimask
