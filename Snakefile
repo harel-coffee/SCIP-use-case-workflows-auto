@@ -2,11 +2,12 @@ rule preprocessing:
     input:
         expand(
             "{data}/features.{part}.parquet",
-            part=range(10),
+            part=range(int(config['parts'])),
             allow_missing=True
         )
     output:
         "{data}/features.parquet"
+    threads: 1
     conda:
         "environment.yml"
     log:
@@ -14,20 +15,26 @@ rule preprocessing:
     notebook:
         "notebooks/preprocessing/{config[set]}_processing_scip_features.ipynb"
 
-
-rule WBC_IFC_labels:
-    input:
-        features="{data_root}/scip/{data_postfix}/features.parquet",
-        population_dir="{data_root}/meta/"
+rule labels:
     output:
         "{data_root}/scip/{data_postfix}/labels.parquet"
     conda:
         "environment.yml"
+    threads: 1
     log:
-        notebook="{data_root}/scip/{data_postfix}/notebooks/preprocessing/wbc_labels.ipynb"
+        notebook="{data_root}/scip/{data_postfix}/notebooks/preprocessing/labels.ipynb"
     notebook:
-        "notebooks/preprocessing/wbc_labels.ipynb"
-
+        "notebooks/preprocessing/config[set]_labels.ipynb"
+        
+use rule labels as WBC_IFC_labels with:
+    input:
+        features="{data_root}/scip/{data_postfix}/features.parquet",
+        population_dir="{data_root}/meta/"
+        
+use rule labels as BBBC_labels with:
+    input:
+        image_path="{data_root}/BBBC021_v1_image.csv",
+        output="{data_root}/labels.parquet"
 
 rule quality_control:
     input:
