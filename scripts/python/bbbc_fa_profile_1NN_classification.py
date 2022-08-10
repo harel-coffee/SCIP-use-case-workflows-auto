@@ -3,6 +3,10 @@ import sys
 from sklearn.model_selection import LeaveOneGroupOut, cross_validate
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.decomposition import FactorAnalysis
+from sklearn.metrics import (
+    accuracy_score, balanced_accuracy_score, precision_score, f1_score,
+    make_scorer
+)
 import multiprocessing
 import pandas
 import numpy
@@ -26,6 +30,7 @@ except NameError:
     moa_path = data_root / "BBBC021_v1_moa.csv"
     output = data_dir / "fa.pickle"
 
+# paths = list(paths)[:3]
 df = pandas.concat([pq.read_table(p).to_pandas() for p in paths])
 df = df.drop(
     columns=df.filter(regex='meta_image_.*').columns.tolist() + [
@@ -93,7 +98,12 @@ def run_fa(df, moa, n_components):
         estimator=KNeighborsClassifier(n_neighbors=1, metric="cosine"),
         return_train_score=True,
         return_estimator=True,
-        scoring=("accuracy", "balanced_accuracy", "f1_macro", "precision_macro")
+        scoring=dict(
+            accuracy=make_scorer(accuracy_score),
+            balanced_accuracy=make_scorer(balanced_accuracy_score),
+            f1_macro=make_scorer(f1_score, average="macro", zero_division=0),
+            precision_macro=make_scorer(precision_score, average="macro", zero_division=0)
+        )
     )
 
     preds = []
@@ -114,11 +124,11 @@ def run_fa(df, moa, n_components):
 
     return n_components, true, preds, results
 
-N = 1
-components = numpy.arange(start=1, stop=2, step=1)
+N = 20
+components = numpy.arange(start=1, stop=101, step=1)
 moa = pandas.read_csv(moa_path).set_index(["compound", "concentration"])
 
-with multiprocessing.Pool(processes=4) as pool:
+with multiprocessing.Pool(processes=8) as pool:
     futures = []
     for comp in components:
         for i in range(N):
@@ -132,7 +142,7 @@ with multiprocessing.Pool(processes=4) as pool:
     results = []
     for future in futures:
         results.append(future.get())
-        logging.getLogger().info("Finished " + results[-1][0])
+        logging.getLogger().info("Finished %d" % results[-1][0])
 
 with open(output, "wb") as fh:
     pickle.dump(results, fh)
