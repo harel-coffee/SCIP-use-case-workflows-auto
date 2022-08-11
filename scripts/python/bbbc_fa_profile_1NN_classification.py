@@ -1,3 +1,5 @@
+import os
+import time
 import pickle
 import sys
 from sklearn.model_selection import LeaveOneGroupOut, cross_validate
@@ -28,7 +30,7 @@ except NameError:
     paths = data_dir.rglob("features.parquet")
     labels_path = data_dir.parent / "labels.parquet"
     moa_path = data_root / "BBBC021_v1_moa.csv"
-    output = data_dir / "fa.pickle"
+    output = data_dir / "fa3.pickle"
 
 # paths = list(paths)[:3]
 df = pandas.concat([pq.read_table(p).to_pandas() for p in paths])
@@ -128,7 +130,10 @@ N = 20
 components = numpy.arange(start=1, stop=101, step=1)
 moa = pandas.read_csv(moa_path).set_index(["compound", "concentration"])
 
-with multiprocessing.Pool(processes=8) as pool:
+start = time.time()
+
+logging.getLogger().info("Using %s processes" % os.environ["PBS_NUM_PPN"])
+with multiprocessing.Pool(processes=int(os.environ["PBS_NUM_PPN"])) as pool:
     futures = []
     for comp in components:
         for i in range(N):
@@ -143,6 +148,8 @@ with multiprocessing.Pool(processes=8) as pool:
     for future in futures:
         results.append(future.get())
         logging.getLogger().info("Finished %d" % results[-1][0])
+
+logging.getLogger().info(time.time() - start)
 
 with open(output, "wb") as fh:
     pickle.dump(results, fh)
