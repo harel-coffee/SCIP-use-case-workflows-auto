@@ -62,12 +62,12 @@ rule all_hyperparameter_optimization:
 
 rule hyperparameter_optimization:
     input:
-        features="{data}/features.parquet",
-        columns="{data}/indices/columns.npy",
-        index="{data}/indices/index.npy",
-        labels="{data}/labels.parquet"
+        features="{data_root}/{type}/{date}/features.parquet",
+        columns="{data_root}/{type}/{date}/indices/columns.npy",
+        index="{data_root}/{type}/{date}/indices/index.npy",
+        labels="{data_root}/{type}/{date}/labels.parquet"
     output:
-        "{data}/hpo/{grid}_{full}.pickle"
+        "{data_root}/{type}/{date}/hpo/{grid}_{full}.pickle"
     conda:
         "environment.yml"
     params:
@@ -76,7 +76,7 @@ rule hyperparameter_optimization:
     threads:
         10
     log:
-        "{data}/log/hyperparameter_optimization_{grid}_{full}.log"
+        "{data_root}/{type}/{date}/log/hyperparameter_optimization_{grid}_{full}.log"
     conda:
         "environment.yml"
     script:
