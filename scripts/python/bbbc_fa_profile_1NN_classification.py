@@ -32,7 +32,6 @@ except NameError:
     moa_path = data_root / "BBBC021_v1_moa.csv"
     output = data_dir / "fa3.pickle"
 
-# paths = list(paths)[:3]
 df = pandas.concat([pq.read_table(p).to_pandas() for p in paths])
 df = df.drop(
     columns=df.filter(regex='meta_image_.*').columns.tolist() + [
@@ -71,6 +70,8 @@ logging.getLogger().info(str(df.shape))
 
 
 def run_fa(df, moa, n_components):
+
+    start = time.time()
 
     fa = FactorAnalysis(random_state=0, n_components=n_components)
     fa.fit(df[df["meta_compound"] == "DMSO"].filter(regex="feat").sample(n=50000))
@@ -124,31 +125,21 @@ def run_fa(df, moa, n_components):
 
     del results["estimator"]
 
-    return n_components, true, preds, results
+    return n_components, true, preds, results, time.time() - start
 
 N = 20
 components = numpy.arange(start=1, stop=101, step=1)
 moa = pandas.read_csv(moa_path).set_index(["compound", "concentration"])
 
-start = time.time()
+def arg_iterator():
+    for _ in range(N):
+        for comp in components:
+            yield (df, moa, comp)
 
 logging.getLogger().info("Using %s processes" % os.environ["PBS_NUM_PPN"])
+start = time.time()
 with multiprocessing.Pool(processes=int(os.environ["PBS_NUM_PPN"])) as pool:
-    futures = []
-    for comp in components:
-        for i in range(N):
-            futures.append(
-                pool.apply_async(run_fa, kwds=dict(
-                    n_components=comp,
-                    df=df,
-                    moa=moa
-                )))
-
-    results = []
-    for future in futures:
-        results.append(future.get())
-        logging.getLogger().info("Finished %d" % results[-1][0])
-
+    results = pool.starmap(run_fa, iter(arg_iterator()))
 logging.getLogger().info(time.time() - start)
 
 with open(output, "wb") as fh:
