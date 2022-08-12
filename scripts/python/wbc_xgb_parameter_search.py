@@ -3,7 +3,6 @@ import pickle
 
 import numpy
 import pyarrow.parquet as pq
-import pandas
 
 from xgboost import XGBClassifier
 from sklearn.preprocessing import LabelEncoder
@@ -28,7 +27,7 @@ df = df.loc[numpy.load(snakemake.input.index, allow_pickle=True)]
 # drop samples not used in CytoA
 if snakemake.wildcards["full"] == "cyto":
     df = df.drop('late', level="meta_fix")
-    df = df.drop(0, level="meta_group")
+    df = df.drop(2, level="meta_group")
     
 df = df.merge(labels, left_index=True, right_index=True)
 df = df[df["meta_label"] != "unknown"]
@@ -41,7 +40,10 @@ enc = LabelEncoder().fit(df["meta_label"])
 y = enc.transform(df["meta_label"])
 
 # selection of the generic channel features for SCIP
-Xs = df.filter(regex="(BF1|BF2|SSC)$")
+if snakemake.wildcards["type"] == "ideas":
+    Xs = df.filter(regex="(bf420nm480nm|bf570nm595nm|m01|m06|m09|ssc)$")
+else:
+    Xs = df.filter(regex="(BF1|BF2|SSC)$")
 
 if snakemake.config["dummy"] == 'true':
     model = DummyClassifier(strategy="uniform", random_state=0)
@@ -57,7 +59,8 @@ else:
             eval_metric="merror",
             tree_method="gpu_hist",
             use_label_encoder=False,
-            random_state=0
+            random_state=0,
+            n_jobs=1
         )
     )
     param_distributions = {
