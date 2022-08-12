@@ -32,6 +32,7 @@ except NameError:
     moa_path = data_root / "BBBC021_v1_moa.csv"
     output = data_dir / "fa3.pickle"
 
+# paths = list(paths)[:3]
 df = pandas.concat([pq.read_table(p).to_pandas() for p in paths])
 df = df.drop(
     columns=df.filter(regex='meta_image_.*').columns.tolist() + [
@@ -124,6 +125,8 @@ def run_fa(df, moa, n_components):
         true.extend(treatment_profiles["moa"].iloc[test_index])
 
     del results["estimator"]
+
+    logging.getLogger().info("Ready %d" % n_components)
 
     return n_components, true, preds, results, time.time() - start
 
