@@ -28,7 +28,7 @@ def run_fa(df, moa, n_components):
 
     start = time.time()
 
-    fa = FactorAnalysis(random_state=0, n_components=n_components)
+    fa = FactorAnalysis(n_components=n_components)
     fa.fit(df[df["meta_compound"] == "DMSO"].filter(regex="feat").sample(n=50000))
     end_fa = time.time() - start
 
@@ -100,7 +100,7 @@ if __name__ == "__main__":
         paths = data_dir.rglob("features.parquet")
         labels_path = data_dir.parent / "labels.parquet"
         moa_path = data_root / "BBBC021_v1_moa.csv"
-        output = data_dir / "fa3.pickle"
+        output = data_dir / "fa3_norandomstate.pickle"
 
     # paths = list(paths)[:2]
     df = pandas.concat([pq.read_table(p).to_pandas() for p in paths])
