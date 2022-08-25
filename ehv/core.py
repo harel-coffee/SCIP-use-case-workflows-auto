@@ -41,7 +41,7 @@ from aicsimageio import AICSImage
 from matplotlib.colors import Normalize
 import matplotlib.gridspec as gridspec
 
-from scip.masking import threshold, util
+from scip.masking import threshold, remove_regions_touching_border
 
 import multiprocessing
 
@@ -212,7 +212,7 @@ def plot_gate_zarr_channels(selectors, df, maxn=20, sort=None, mask=False, main_
             pixels = pixels.reshape(z.attrs["shape"][r["meta_zarr_idx"]])[channel_ind]
 
             m = threshold.get_mask(dict(pixels=pixels), main_channel=main_channel, smooth=smooth)
-            m = util.remove_regions_touching_border(m, bbox_channel_index=main_channel)
+            m = remove_regions_touching_border(m, bbox_channel_index=main_channel)
 
             minr, minc, maxr, maxc = int(r["meta_bbox_minr"]), int(r["meta_bbox_minc"]), int(r["meta_bbox_maxr"]), int(r["meta_bbox_maxc"])
 
