@@ -22,20 +22,6 @@ include: "rules/common.smk"
 #         image_path="{data_root}/BBBC021_v1_image.csv",
 #         output="{data_root}/labels.parquet"
 
-# rule quality_control:
-#     input:
-#         "{data}/features.parquet"
-#     output:
-#         columns="{data}/indices/columns.npy",
-#         index="{data}/indices/index.npy"
-#     conda:
-#         "environment.yml"
-#     log:
-#         notebook="{data}/notebooks/QC/quality_control.ipynb"
-#     notebook:
-#         "notebooks/QC/{config[set]}_quality_control.ipynb"
-
-
 # rule all_hyperparameter_optimization:
 #     input:
 #         expand(
@@ -44,7 +30,6 @@ include: "rules/common.smk"
 #             grid=["rsh", "random"],
 #             data=config["data"]
 #         )
-
 
 # rule hyperparameter_optimization:
 #     input:
