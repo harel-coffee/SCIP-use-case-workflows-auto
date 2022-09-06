@@ -1,24 +1,39 @@
-# Project name here
-> Summary description here.
+# SCIP use case workflows
+
+This repository contains Snakemake workflows to reproduce use cases presented in [insert paper].
+
+It is built using two frameworks:
+- nbdev
+- Snakemake
+
+nbdev makes is a framework for developing reusable code in notebooks. Functions are defined and
+tested in notebooks, and exported to a package. This package can be installed and reused in other
+notebooks or scripts.
+
+Snakemake is a workflow framework to create reproducible data analyses. Workflows are defined
+via a human-readable language, and can be easily executed in various environments.
+
+## Installation
 
 
-This file will become your README and also the index of your documentation.
 
-## Install
+## Usage
 
-`pip install your_project_name`
+The repository can be used to reproduce the use cases, or for development.
 
-## How to use
+### Reproduce use cases
 
-Fill me in please! Don't forget code examples:
+This involves executing the Snakemake workflows. The following expects snakemake to be available.
+Snakemae can be executed using conda environments or a pre-existing environment
+containing all required packages.
 
-```python
-1+1
+To reproduce a use-case execute:
+```bash
+snakemake ...
 ```
+This expects the environment to contain all required dependencies. Add `--use-conda` to let
+Snakemake create a conda environment all requirements.
 
+### Development
 
-
-
-    2
-
-
+This involves the nbdev framework.

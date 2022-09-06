@@ -1,3 +1,0 @@
-FROM ehv:parent
-
-ENTRYPOINT ["mamba", "run", "-n", "env", "--cwd", "/app"]
