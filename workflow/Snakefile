@@ -1,5 +1,7 @@
 
 include: "rules/common.smk"
+include: "rules/BBBC021.smk"
+include: "rules/CD7.smk"
 
 # rule labels:
 #     output:
@@ -16,11 +18,6 @@ include: "rules/common.smk"
 #     input:
 #         features="{data_root}/scip/{data_postfix}/features.parquet",
 #         population_dir="{data_root}/meta/"
-
-# use rule labels as BBBC_labels with:
-#     input:
-#         image_path="{data_root}/BBBC021_v1_image.csv",
-#         output="{data_root}/labels.parquet"
 
 # rule all_hyperparameter_optimization:
 #     input:

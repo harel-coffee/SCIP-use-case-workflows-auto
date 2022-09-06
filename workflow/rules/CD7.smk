@@ -4,10 +4,10 @@ rule clustering:
         columns="indices/columns.npy",
         index="indices/index.npy",
     output:
-        "results/{config[use_case]}/figures/cluster_annotation.png"
+        "figures/cluster_annotation.png"
     conda:
-        "environment.yml"
+        "../envs/environment.yml"
     log:
-        notebook="{data}/Leukocyte clustering.ipynb"
+        notebook="notebooks/clustering.ipynb"
     notebook:
-        "notebooks/Leukocyte clustering.ipynb"
+        "../notebooks/clustering.ipynb"
