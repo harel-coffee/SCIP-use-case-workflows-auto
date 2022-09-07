@@ -27,12 +27,12 @@ This involves executing the Snakemake workflows. The following expects snakemake
 Snakemae can be executed using conda environments or a pre-existing environment
 containing all required packages.
 
-To reproduce a use-case execute:
+To reproduce a use-case, open a terminal in the current directory and execute:
 ```bash
-snakemake ...
+snakemake --configfile config/use_case.yaml --directory root_dir
 ```
 This expects the environment to contain all required dependencies. Add `--use-conda` to let
-Snakemake create a conda environment all requirements.
+Snakemake create a conda environment containing all requirements.
 
 ### Development
 
