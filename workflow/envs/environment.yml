@@ -25,3 +25,4 @@ dependencies:
         - flowutils
         - kneed
         - scip-workflows
+        - umap-learn[plot]

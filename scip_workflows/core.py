@@ -4,6 +4,9 @@
 __all__ = ['load_from_sqlite_db', 'add_gating_table', 'add_gate', 'do_umap', 'SelectFromCollection', 'color_dimred', 'plot_gate',
            'plot_gate_zarr', 'plot_gate_zarr_channels', 'plot_gate_czi']
 
+# %% ../workflow/notebooks/core/00_core.ipynb 4
+from .common import *
+
 # %% ../workflow/notebooks/core/00_core.ipynb 5
 import sys
 import yaml
@@ -20,7 +23,7 @@ from scip.masking import threshold, remove_regions_touching_border
 
 import multiprocessing
 
-# %% ../workflow/notebooks/core/00_core.ipynb 7
+# %% ../workflow/notebooks/core/00_core.ipynb 8
 def load_from_sqlite_db(path, gate=None):
     with sqlite3.connect(path) as con:
 
@@ -62,14 +65,14 @@ def add_gate(path, name, df):
             DO UPDATE SET meta_%s = 1
         """ % (name, name), df[["meta_id", "meta_file"]].to_dict(orient="records"))
 
-# %% ../workflow/notebooks/core/00_core.ipynb 13
+# %% ../workflow/notebooks/core/00_core.ipynb 14
 def do_umap(name, data, **umap_args):
     projector = umap.UMAP(**umap_args)
     projection = projector.fit_transform(data)
     projection = pandas.DataFrame(projection, columns=["dim_%d" % i for i in range(1, projector.get_params()["n_components"]+1)])
     dump(projection, "data/umap/%s.dat" % name)
 
-# %% ../workflow/notebooks/core/00_core.ipynb 14
+# %% ../workflow/notebooks/core/00_core.ipynb 15
 from matplotlib.widgets import PolygonSelector
 import matplotlib.path
 
@@ -93,7 +96,7 @@ class SelectFromCollection:
         self.lasso.disconnect_events()
         self.canvas.draw_idle()
 
-# %% ../workflow/notebooks/core/00_core.ipynb 15
+# %% ../workflow/notebooks/core/00_core.ipynb 16
 def color_dimred(dimred, feat):
     fig, ax = plt.subplots(dpi=150)
     norm = Normalize(vmin=feat.quantile(0.01), vmax=feat.quantile(0.99))
@@ -105,7 +108,7 @@ def color_dimred(dimred, feat):
     ax.figure.colorbar(sm, shrink=0.7)
     return ax
 
-# %% ../workflow/notebooks/core/00_core.ipynb 17
+# %% ../workflow/notebooks/core/00_core.ipynb 18
 def plot_gate(sel, df, maxn=200, sort=None):
     df = df.loc[sel]
 
@@ -126,7 +129,7 @@ def plot_gate(sel, df, maxn=200, sort=None):
     for ax in axes[len(df):]:
         ax.set_axis_off()
 
-# %% ../workflow/notebooks/core/00_core.ipynb 18
+# %% ../workflow/notebooks/core/00_core.ipynb 19
 def plot_gate_zarr(sel, df, maxn=200, sort=None, channel=0):
     df = df.loc[sel]
 
@@ -154,7 +157,7 @@ def plot_gate_zarr(sel, df, maxn=200, sort=None, channel=0):
     for ax in axes[len(df):]:
         ax.set_axis_off()
 
-# %% ../workflow/notebooks/core/00_core.ipynb 19
+# %% ../workflow/notebooks/core/00_core.ipynb 20
 def plot_gate_zarr_channels(selectors, df, maxn=20, sort=None, mask=False, main_channel=3, smooth=0.75, channel_ind=[0], channel_names=["c"]):
 
     dfs = []
@@ -220,7 +223,7 @@ def plot_gate_zarr_channels(selectors, df, maxn=20, sort=None, mask=False, main_
                 if i == 0:
                     ax.set_title(channel_names[j])
 
-# %% ../workflow/notebooks/core/00_core.ipynb 20
+# %% ../workflow/notebooks/core/00_core.ipynb 21
 def plot_gate_czi(sel, df, maxn=200, sort=None, channel=0):
     df = df.loc[sel]
 

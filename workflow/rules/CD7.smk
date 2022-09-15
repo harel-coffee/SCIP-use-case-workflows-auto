@@ -11,3 +11,13 @@ rule clustering:
         notebook="notebooks/clustering.ipynb"
     notebook:
         "../notebooks/clustering.ipynb"
+        
+rule image_inspection:
+    input:
+        "Experiment-800.czi"
+    output:
+        scenes.txt
+    log:
+        notebook="notebooks/image_inspection.ipynb"
+    notebook:
+        "../notebooks/image_inspection.ipynb"

@@ -6,8 +6,7 @@ __all__ = []
 # %% ../workflow/notebooks/common.ipynb 1
 __all__ = ["pandas", "os", "numpy", "seaborn", 
 "logging", "plt", "cm", "matplotlib", "reload", 
-"core", "Path", "re", "scipy", "CategoricalDtype",
-"pq"]
+"Path", "re", "scipy", "CategoricalDtype", "pq"]
 
 import pandas
 import os
@@ -18,7 +17,6 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 import matplotlib
 from importlib import reload
-from . import core
 from pathlib import Path
 import re
 import scipy
