@@ -1,4 +1,3 @@
-
 rule WBC_labels:
     input:
         features="features.parquet",
@@ -16,8 +15,7 @@ rule WBC_qc_paper_figure:
     input:
         features="features.parquet",
         columns="indices/columns.npy",
-        index="indices/index.npy",
-        images_parent=config['images_parent']
+        index="indices/index.npy"
     output:
         "figures/wbc_qc_masks.png"
     conda:
