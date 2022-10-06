@@ -22,8 +22,9 @@ import matplotlib.gridspec as gridspec
 from scip.masking import threshold, remove_regions_touching_border
 
 import multiprocessing
+import math
 
-# %% ../workflow/notebooks/core/00_core.ipynb 8
+# %% ../workflow/notebooks/core/00_core.ipynb 7
 def load_from_sqlite_db(path, gate=None):
     with sqlite3.connect(path) as con:
 
@@ -65,14 +66,14 @@ def add_gate(path, name, df):
             DO UPDATE SET meta_%s = 1
         """ % (name, name), df[["meta_id", "meta_file"]].to_dict(orient="records"))
 
-# %% ../workflow/notebooks/core/00_core.ipynb 14
+# %% ../workflow/notebooks/core/00_core.ipynb 13
 def do_umap(name, data, **umap_args):
     projector = umap.UMAP(**umap_args)
     projection = projector.fit_transform(data)
     projection = pandas.DataFrame(projection, columns=["dim_%d" % i for i in range(1, projector.get_params()["n_components"]+1)])
     dump(projection, "data/umap/%s.dat" % name)
 
-# %% ../workflow/notebooks/core/00_core.ipynb 15
+# %% ../workflow/notebooks/core/00_core.ipynb 14
 from matplotlib.widgets import PolygonSelector
 import matplotlib.path
 
@@ -96,7 +97,7 @@ class SelectFromCollection:
         self.lasso.disconnect_events()
         self.canvas.draw_idle()
 
-# %% ../workflow/notebooks/core/00_core.ipynb 16
+# %% ../workflow/notebooks/core/00_core.ipynb 15
 def color_dimred(dimred, feat):
     fig, ax = plt.subplots(dpi=150)
     norm = Normalize(vmin=feat.quantile(0.01), vmax=feat.quantile(0.99))
@@ -108,7 +109,7 @@ def color_dimred(dimred, feat):
     ax.figure.colorbar(sm, shrink=0.7)
     return ax
 
-# %% ../workflow/notebooks/core/00_core.ipynb 18
+# %% ../workflow/notebooks/core/00_core.ipynb 17
 def plot_gate(sel, df, maxn=200, sort=None):
     df = df.loc[sel]
 
@@ -129,7 +130,7 @@ def plot_gate(sel, df, maxn=200, sort=None):
     for ax in axes[len(df):]:
         ax.set_axis_off()
 
-# %% ../workflow/notebooks/core/00_core.ipynb 19
+# %% ../workflow/notebooks/core/00_core.ipynb 18
 def plot_gate_zarr(sel, df, maxn=200, sort=None, channel=0):
     df = df.loc[sel]
 
@@ -157,7 +158,7 @@ def plot_gate_zarr(sel, df, maxn=200, sort=None, channel=0):
     for ax in axes[len(df):]:
         ax.set_axis_off()
 
-# %% ../workflow/notebooks/core/00_core.ipynb 20
+# %% ../workflow/notebooks/core/00_core.ipynb 19
 def plot_gate_zarr_channels(selectors, df, maxn=20, sort=None, mask=False, main_channel=3, smooth=0.75, channel_ind=[0], channel_names=["c"]):
 
     dfs = []
@@ -223,8 +224,8 @@ def plot_gate_zarr_channels(selectors, df, maxn=20, sort=None, mask=False, main_
                 if i == 0:
                     ax.set_title(channel_names[j])
 
-# %% ../workflow/notebooks/core/00_core.ipynb 21
-def plot_gate_czi(sel, df, maxn=200, sort=None, channel=0):
+# %% ../workflow/notebooks/core/00_core.ipynb 20
+def plot_gate_czi(sel, df, maxn=200, sort=None, channels=[0]):
     df = df.loc[sel]
 
     if len(df) > maxn:
@@ -233,26 +234,41 @@ def plot_gate_czi(sel, df, maxn=200, sort=None, channel=0):
     if sort is not None:
         df = df.sort_values(by=sort)
 
-    fig, axes = plt.subplots(ncols=10, nrows=int(math.ceil(len(df) / 10)), dpi=150)
+    ncols = min(df.shape[0], 5)
+    nrows = int(math.ceil(len(df) / ncols))
+    fig, axes = plt.subplots(
+        ncols=ncols, 
+        nrows=nrows, 
+        dpi=50,
+        figsize = (ncols*2*len(channels), nrows*2)
+    )
     axes = axes.ravel()
     i = 0
 
+    extent = numpy.full((df.shape[0], 2, len(channels)), dtype=float, fill_value=numpy.nan)
+    pixels = []
     for path, gdf in df.groupby(["meta_path"]):
         ai = AICSImage(path, reconstruct_mosaic=False)
         for scene, gdf2 in gdf.groupby(["meta_scene"]):
             ai.set_scene(scene)
             for tile, gdf3 in gdf2.groupby(["meta_tile"]):
-                print(tile, scene, path)
+                print(tile, scene, end=" ")
                 for (idx, r) in gdf3.iterrows():
                     ax = axes[i]
 
-                    pixels = ai.get_image_data("XY", Z=0, T=0, C=channel, M=tile)
+                    pixels_ = ai.get_image_data("CXY", Z=0, T=0, C=channels, M=tile)
                     minr, minc, maxr, maxc = int(r["meta_bbox_minr"]), int(r["meta_bbox_minc"]), int(r["meta_bbox_maxr"]), int(r["meta_bbox_maxc"])
-
-                    ax.imshow(pixels[minr:maxr, minc:maxc])
-                    ax.set_axis_off()
-
+                    
+                    extent[i, 0] = pixels_[:, minr:maxr, minc:maxc].reshape(pixels_.shape[0], -1).min(axis=1)
+                    extent[i, 1] = pixels_[:, minr:maxr, minc:maxc].reshape(pixels_.shape[0], -1).max(axis=1)
+                    pixels.append(pixels_[:, minr:maxr, minc:maxc])
                     i+=1
+                    
+    min_ = extent[:, 0].min(axis=0)
+    max_ = extent[:, 1].max(axis=0)
+    
+    for ax, pixels_ in zip(axes, pixels):
+        ax.imshow(numpy.hstack((pixels_ - min_[:, numpy.newaxis, numpy.newaxis]) / (max_ - min_)[:, numpy.newaxis, numpy.newaxis]))
 
-    for ax in axes[len(df):]:
+    for ax in axes:
         ax.set_axis_off()
