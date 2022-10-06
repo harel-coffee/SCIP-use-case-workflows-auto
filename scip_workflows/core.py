@@ -19,7 +19,7 @@ from aicsimageio import AICSImage
 from matplotlib.colors import Normalize
 import matplotlib.gridspec as gridspec
 
-from scip.masking import threshold, remove_regions_touching_border
+from scip.masking import remove_regions_touching_border
 
 import multiprocessing
 import math
@@ -225,7 +225,7 @@ def plot_gate_zarr_channels(selectors, df, maxn=20, sort=None, mask=False, main_
                     ax.set_title(channel_names[j])
 
 # %% ../workflow/notebooks/core/00_core.ipynb 20
-def plot_gate_czi(sel, df, maxn=200, sort=None, channels=[0]):
+def plot_gate_czi(sel, df, maxn=200, sort=None, channels=[0], masks_path_col=None):
     df = df.loc[sel]
 
     if len(df) > maxn:
@@ -247,6 +247,8 @@ def plot_gate_czi(sel, df, maxn=200, sort=None, channels=[0]):
 
     extent = numpy.full((df.shape[0], 2, len(channels)), dtype=float, fill_value=numpy.nan)
     pixels = []
+    masks = []
+    ids = []
     for path, gdf in df.groupby(["meta_path"]):
         ai = AICSImage(path, reconstruct_mosaic=False)
         for scene, gdf2 in gdf.groupby(["meta_scene"]):
@@ -262,13 +264,21 @@ def plot_gate_czi(sel, df, maxn=200, sort=None, channels=[0]):
                     extent[i, 0] = pixels_[:, minr:maxr, minc:maxc].reshape(pixels_.shape[0], -1).min(axis=1)
                     extent[i, 1] = pixels_[:, minr:maxr, minc:maxc].reshape(pixels_.shape[0], -1).max(axis=1)
                     pixels.append(pixels_[:, minr:maxr, minc:maxc])
+                    ids.append(r.meta_id)
+                    
+                    if masks_path_col is not None:
+                        mask = numpy.load(r[masks_path_col])[:, minr:maxr, minc:maxc]
+                        masks.append(mask)
+                    
                     i+=1
                     
     min_ = extent[:, 0].min(axis=0)
     max_ = extent[:, 1].max(axis=0)
     
-    for ax, pixels_ in zip(axes, pixels):
+    for i, (ax, pixels_, id_) in enumerate(zip(axes, pixels, ids)):
         ax.imshow(numpy.hstack((pixels_ - min_[:, numpy.newaxis, numpy.newaxis]) / (max_ - min_)[:, numpy.newaxis, numpy.newaxis]))
+        if len(masks) > 0:
+            ax.imshow(numpy.hstack(numpy.where(masks[i] == id_, numpy.nan, 1)), cmap="Blues", alpha=.3)
 
     for ax in axes:
         ax.set_axis_off()
