@@ -225,7 +225,7 @@ def plot_gate_zarr_channels(selectors, df, maxn=20, sort=None, mask=False, main_
                     ax.set_title(channel_names[j])
 
 # %% ../workflow/notebooks/core/00_core.ipynb 20
-def plot_gate_czi(sel, df, maxn=200, sort=None, channels=[0], masks_path_col=None):
+def plot_gate_czi(sel, df, maxn=200, sort=None, channels=[0], masks_path_col=None, extent=None):
     df = df.loc[sel]
 
     if len(df) > maxn:
@@ -244,8 +244,13 @@ def plot_gate_czi(sel, df, maxn=200, sort=None, channels=[0], masks_path_col=Non
     )
     axes = axes.ravel()
     i = 0
+    
+    compute_extent = False
+    if extent is None:
+        compute_extent = True
 
-    extent = numpy.full((df.shape[0], 2, len(channels)), dtype=float, fill_value=numpy.nan)
+    if compute_extent:
+        extent = numpy.full((df.shape[0], 2, len(channels)), dtype=float, fill_value=numpy.nan)
     pixels = []
     masks = []
     ids = []
@@ -261,19 +266,28 @@ def plot_gate_czi(sel, df, maxn=200, sort=None, channels=[0], masks_path_col=Non
                     pixels_ = ai.get_image_data("CXY", Z=0, T=0, C=channels, M=tile)
                     minr, minc, maxr, maxc = int(r["meta_bbox_minr"]), int(r["meta_bbox_minc"]), int(r["meta_bbox_maxr"]), int(r["meta_bbox_maxc"])
                     
-                    extent[i, 0] = pixels_[:, minr:maxr, minc:maxc].reshape(pixels_.shape[0], -1).min(axis=1)
-                    extent[i, 1] = pixels_[:, minr:maxr, minc:maxc].reshape(pixels_.shape[0], -1).max(axis=1)
+                    if compute_extent:
+                        extent[i, 0] = pixels_[:, minr:maxr, minc:maxc].reshape(pixels_.shape[0], -1).min(axis=1)
+                        extent[i, 1] = pixels_[:, minr:maxr, minc:maxc].reshape(pixels_.shape[0], -1).max(axis=1)
                     pixels.append(pixels_[:, minr:maxr, minc:maxc])
-                    ids.append(r.meta_id)
+                
+                    if "meta_id" in r:
+                        ids.append(r.meta_id)
+                    else:
+                        ids.append(idx[-1])
                     
                     if masks_path_col is not None:
                         mask = numpy.load(r[masks_path_col])[:, minr:maxr, minc:maxc]
                         masks.append(mask)
                     
                     i+=1
-                    
-    min_ = extent[:, 0].min(axis=0)
-    max_ = extent[:, 1].max(axis=0)
+    
+    if compute_extent:
+        min_ = extent[:, 0].min(axis=0)
+        max_ = extent[:, 1].max(axis=0)
+    else:
+        min_ = extent[:, 0]
+        max_ = extent[:, 1]
     
     for i, (ax, pixels_, id_) in enumerate(zip(axes, pixels, ids)):
         ax.imshow(numpy.hstack((pixels_ - min_[:, numpy.newaxis, numpy.newaxis]) / (max_ - min_)[:, numpy.newaxis, numpy.newaxis]))
