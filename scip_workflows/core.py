@@ -131,16 +131,18 @@ def plot_gate(sel, df, maxn=200, sort=None):
         ax.set_axis_off()
 
 # %% ../workflow/notebooks/core/00_core.ipynb 18
-def plot_gate_zarr(sel, df, maxn=200, sort=None, channel=0):
+def plot_gate_zarr(sel, df, mask, maxn=200, sort=None, channel=0, bbox=True):
     df = df.loc[sel]
-
+    
     if len(df) > maxn:
         df = df.sample(n=maxn)
-
+        
     if sort is not None:
         df = df.sort_values(by=sort)
-
-    fig, axes = plt.subplots(ncols=10, nrows=int(math.ceil(len(df) / 10)), dpi=150)
+    
+    nrows = int(math.ceil(len(df) / 10))
+    ncols = min(10, len(df))
+    fig, axes = plt.subplots(ncols=ncols, nrows=nrows, dpi=150, figsize=(ncols*3, nrows*3))
     axes = axes.ravel()
     i = 0
     for path, gdf in df.groupby("meta_path"):
@@ -149,56 +151,61 @@ def plot_gate_zarr(sel, df, maxn=200, sort=None, channel=0):
             ax = axes[i]
             pixels = z[r["meta_zarr_idx"]]
             pixels = pixels.reshape(z.attrs["shape"][r["meta_zarr_idx"]])[channel]
-            minr, minc, maxr, maxc = int(r["meta_bbox_minr"]), int(r["meta_bbox_minc"]), int(r["meta_bbox_maxr"]), int(r["meta_bbox_maxc"])
-
-            ax.imshow(pixels[minr:maxr, minc:maxc])
+            
+            if bbox:
+                minr, minc, maxr, maxc = int(r[f"meta_{mask}_bbox_minr"]), int(r[f"meta_{mask}_bbox_minc"]), int(r[f"meta_{mask}_bbox_maxr"]), int(r[f"meta_{mask}_bbox_maxc"])
+                ax.imshow(pixels[minr:maxr, minc:maxc])
+            else:
+                ax.imshow(pixels)
             ax.set_axis_off()
-
+            
             i+=1
     for ax in axes[len(df):]:
         ax.set_axis_off()
 
 # %% ../workflow/notebooks/core/00_core.ipynb 19
-def plot_gate_zarr_channels(selectors, df, maxn=20, sort=None, mask=False, main_channel=3, smooth=0.75, channel_ind=[0], channel_names=["c"]):
-
+def plot_gate_zarr_channels(selectors, df, mask, maxn=20, sort=None, show_mask=False, main_channel=3, smooth=0.75, channel_ind=[0], channel_names=["c"]):
+    
     dfs = []
     for i, sel in enumerate(selectors):
         tmp_df = df[sel].copy()
-
+    
         if len(tmp_df) > maxn:
             tmp_df = tmp_df.sample(n=maxn)
 
         if sort is not None:
             tmp_df = tmp_df.sort_values(by=sort)
-
+            
         tmp_df["sel"] = i
         dfs.append(tmp_df)
     df = pandas.concat(dfs)
-
+        
     nchannels = len(channel_ind)
-
+    
     images = {}
     masks = {}
     values = {}
     extent = numpy.empty(shape=(nchannels, 2), dtype=float)
     extent[:, 0] = numpy.inf
     extent[:, 1] = -numpy.inf
-
+    
     for path, gdf in df.groupby("meta_path"):
         z = zarr.open(path, mode="r")
         for (idx, r) in gdf.iterrows():
             pixels = z[r["meta_zarr_idx"]]
             pixels = pixels.reshape(z.attrs["shape"][r["meta_zarr_idx"]])[channel_ind]
+            
+            minr, minc, maxr, maxc = int(r[f"meta_{mask}_bbox_minr"]), int(r[f"meta_{mask}_bbox_minc"]), int(r[f"meta_{mask}_bbox_maxr"]), int(r[f"meta_{mask}_bbox_maxc"])
 
-            m = threshold.get_mask(dict(pixels=pixels), main_channel=main_channel, smooth=smooth)
-            m = remove_regions_touching_border(m, bbox_channel_index=main_channel)
-
-            minr, minc, maxr, maxc = int(r["meta_bbox_minr"]), int(r["meta_bbox_minc"]), int(r["meta_bbox_maxr"]), int(r["meta_bbox_maxc"])
-
-            arr = m["mask"][:, minr:maxr, minc:maxc]
+            images[r["sel"]] = images.get(r["sel"], []) + [pixels[:, minr:maxr, minc:maxc]]
+            if show_mask:
+                m = li.get_mask(dict(pixels=pixels), main_channel=main_channel, smooth=smooth)
+                m = remove_regions_touching_border(m, bbox_channel_index=main_channel)
+                arr = m["mask"][:, minr:maxr, minc:maxc]
+            else:
+                arr = numpy.full(shape=pixels.shape, dtype=bool, fill_value=True)[:, minr:maxr, minc:maxc]
             masks[r["sel"]] = masks.get(r["sel"], []) + [numpy.where(arr, numpy.nan, arr)]
-            images[r["sel"]] = images.get(r["sel"], []) + [m["pixels"][:, minr:maxr, minc:maxc]]
-
+            
             p =  numpy.where(arr, pixels[:, minr:maxr, minc:maxc], numpy.nan)
             extent[:, 0] = numpy.nanmin(numpy.array([extent[:, 0], numpy.nanmin(p.reshape(nchannels, -1), axis=1)]), axis=0)
             extent[:, 1] = numpy.nanmax(numpy.array([extent[:, 1], numpy.nanmax(p.reshape(nchannels, -1), axis=1)]), axis=0)
@@ -207,7 +214,7 @@ def plot_gate_zarr_channels(selectors, df, maxn=20, sort=None, mask=False, main_
     grid = gridspec.GridSpec(1, len(selectors), figure=fig, wspace=0.1)
     cmap = plt.get_cmap('viridis')
     norms = [Normalize(vmin=a, vmax=b) for a,b in extent]
-
+    
     gs = {
         k: grid[0, k].subgridspec(len(v), nchannels)
         for k, v in images.items()
@@ -217,7 +224,7 @@ def plot_gate_zarr_channels(selectors, df, maxn=20, sort=None, mask=False, main_
             for j, (p, m, norm) in enumerate(zip(image, masks[k][i], norms)):
                 ax = plt.Subplot(fig, gs[k][i, j])
                 ax.imshow(cmap(norm(p)))
-                if mask:
+                if show_mask:
                     ax.imshow(m, alpha=0.3, cmap="Blues")
                 ax.set_axis_off()
                 fig.add_subplot(ax)
