@@ -1,14 +1,18 @@
-rule all_clustering:
-    input:
-        "adata_0.h5ad", "adata_1.h5ad"
+use rule preprocessing as CD7_preprocessing with:
+    output:
+        "CD7_features.parquet"
 
-rule clustering:
+rule CD7_all_clustering:
     input:
-        features="features.parquet",
+        "CD7_adata_0.h5ad", "CD7_adata_1.h5ad"
+
+rule CD7_clustering:
+    input:
+        features="CD7_features.parquet",
         columns="indices/columns.npy",
         index="indices/index.npy"
     output:
-        "adata_{fillna}.h5ad"
+        "CD7_adata_{fillna}.h5ad"
     conda:
         "../envs/environment.yml"
     threads: 1
@@ -17,11 +21,11 @@ rule clustering:
     notebook:
         "../notebooks/CD7/clustering.ipynb"
         
-rule cluster_annotation:
+rule CD7_cluster_annotation:
     input:
-        "adata_0.h5ad"
+        "CD7_adata_0.h5ad"
     output:
-        "figures/cluster_annotation.png"
+        "figures/CD7_cluster_annotation.png"
     threads: 1
     conda:
         "../envs/environment.yml"
@@ -30,11 +34,14 @@ rule cluster_annotation:
     notebook:
         "../notebooks/CD7/cluster_annotation.ipynb"
         
-rule image_inspection:
+rule CD7_image_inspection:
     input:
         "Experiment-800.czi"
     output:
-        "scenes.txt"
+        "CD7_scenes.txt"
+    threads: 1
+    conda:
+        "../envs/environment.yml"
     log:
         notebook="notebooks/image_inspection.ipynb"
     notebook:

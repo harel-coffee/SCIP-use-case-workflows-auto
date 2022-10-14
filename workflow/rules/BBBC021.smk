@@ -1,10 +1,14 @@
+use rule preprocessing as BBBC021_preprocessing with:
+    output:
+        "BBBC021_features.parquet"
+
 rule BBBC021_moa_prediction:
     input:
         features="features.parquet",
         moa="BBBC021_v1_moa.csv",
         image="BBBC021_v1_image.csv"
     output:
-        confusion_matrix="figures/confusion_matrix.png"
+        confusion_matrix="figures/BBBC021_confusion_matrix.png"
     conda:
         "../envs/environment.yml"
     log:

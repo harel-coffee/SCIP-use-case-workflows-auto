@@ -7,11 +7,12 @@ import pyarrow.parquet as pq
 from xgboost import XGBClassifier
 from sklearn.preprocessing import LabelEncoder
 from sklearn.experimental import enable_halving_search_cv
-from sklearn.model_selection import StratifiedKFold, cross_validate, HalvingRandomSearchCV, RandomizedSearchCV
+from sklearn.model_selection import (
+    StratifiedKFold, cross_validate, HalvingRandomSearchCV, RandomizedSearchCV)
 from imblearn.over_sampling import RandomOverSampler
 from imblearn.under_sampling import RandomUnderSampler
 from imblearn.pipeline import make_pipeline
-
+import pandas
 from sklearn.dummy import DummyClassifier
 
 # LOAD DATA
@@ -43,9 +44,19 @@ y = enc.transform(df["meta_label"])
 if snakemake.wildcards["type"] == "ideas":
     Xs = df.filter(regex="(bf420nm480nm|bf570nm595nm|m01|m06|m09|ssc)$")
 else:
-    Xs = df.filter(regex="(BF1|BF2|SSC)$")
+    if snakemake.wildcards["mask"] == "otsu":
+        Xs = df.filter(regex=".*_otsu_.*(BF1|BF2|SSC)$")
+    elif snakemake.wildcards["mask"] == "li":
+        Xs = df.filter(regex=".*_li_.*(BF1|BF2|SSC)$")
+    elif snakemake.wildcards["mask"] == "otsuli":
+        Xs = pandas.concat([
+            df.filter(regex=".*_otsu_.*(SSC)$"),
+            df.filter(regex=".*_li_.*(BF1|BF2)$"),
+        ], axis=1)
+    else:
+        raise ValueError(snakemake.wildcards["mask"])
 
-if snakemake.config["dummy"] == 'true':
+if snakemake.wildcards["model"] == 'true':
     model = DummyClassifier(strategy="uniform", random_state=0)
     param_distributions = {}
     resource = 'n_samples'
@@ -64,7 +75,7 @@ else:
         )
     )
     param_distributions = {
-        "xgbclassifier__max_depth": [6, 5, 4, 3, 2],
+        "xgbclassifier__max_depth": [7, 6, 5, 4, 3, 2],
         "xgbclassifier__learning_rate": [0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0.05, 0.01, 0.001],
         "xgbclassifier__subsample": numpy.arange(start=0.1, stop=1.1, step=.1),
         "xgbclassifier__colsample_bytree": numpy.arange(start=0.1, stop=1.1, step=.1),
@@ -74,7 +85,7 @@ else:
     }
     resource = 'n_samples'
 
-if snakemake.params["grid"] == "random":
+if snakemake.wildcards["grid"] == "random":
     grid = RandomizedSearchCV(
         estimator=model,
         param_distributions=param_distributions,

@@ -1,8 +1,13 @@
+use rule preprocessing as WBC_preprocessing with:
+    output: 
+        "WBC_features.parquet"
+
 rule WBC_labels:
     input:
-        features="features.parquet",
+        features="WBC_features.parquet",
+        population_dir="../../meta"
     output:
-        "labels.parquet"
+        "WBC_labels.parquet"
     conda:
         "../envs/environment.yml"
     threads: 1
@@ -13,11 +18,11 @@ rule WBC_labels:
 
 rule WBC_qc_paper_figure:
     input:
-        features="features.parquet",
+        features="WBC_features.parquet",
         columns="indices/columns.npy",
         index="indices/index.npy"
     output:
-        "figures/wbc_qc_masks.png"
+        "figures/WBC_qc_masks.png"
     conda:
         "../envs/environment.yml"
     threads: 1
@@ -26,59 +31,58 @@ rule WBC_qc_paper_figure:
     notebook:
         "../notebooks/WBC/qc_paper_figure.ipynb"
 
-rule WBC_feature_comparison:
-    input:
-        features="features.parquet",
-        columns="indices/columns.npy",
-        index="indices/index.npy",
-        ideas=""
-    conda:
-        "../envs/environment.yml"
-    threads: 1
-    log:
-        notebook="notebooks/feature_comparison.ipynb"
-    notebook:
-        "notebooks/WBC/feature_comparison.ipynb"
-
-# rule WBC_all_hyperparameter_optimization:
+# rule WBC_feature_comparison:
 #     input:
-#         expand(
-#             "{data}/hpo/{grid}_{full}.pickle",
-#             full=["full", "cyto"],
-#             grid=["rsh", "random"],
-#             data=config["data"]
-#         )
-
-# rule WBC_hyperparameter_optimization:
-#     input:
-#         features="{data_root}/{type}/{date}/features.parquet",
-#         columns="{data_root}/{type}/{date}/indices/columns.npy",
-#         index="{data_root}/{type}/{date}/indices/index.npy",
-#         labels="{data_root}/{type}/{date}/labels.parquet"
-#     output:
-#         "{data_root}/{type}/{date}/hpo/{grid}_{full}.pickle"
-#     conda:
-#         "environment.yml"
-#     params:
-#         set=config["set"],
-#         grid="{grid}"
-#     threads:
-#         10
-#     log:
-#         "{data_root}/{type}/{date}/log/hyperparameter_optimization_{grid}_{full}.log"
+#         features="features.parquet",
+#         columns="indices/columns.npy",
+#         index="indices/index.npy",
+#         ideas=""
 #     conda:
 #         "../envs/environment.yml"
-#     script:
-#         "../scripts/python/{config[use_case]}/xgb_parameter_search.py"
+#     threads: 1
+#     log:
+#         notebook="notebooks/feature_comparison.ipynb"
+#     notebook:
+#         "../notebooks/WBC/feature_comparison.ipynb"
+
+rule WBC_all_hyperparameter_optimization:
+    input:
+        expand(
+            "hpo/wbc_{grid}_{type}_{full}_{mask}_{model}.pickle",
+            full=["full", "cyto"],
+            grid=["rsh", "random"],
+            mask=["otsu", "li", "otsuli"],
+            type=["ideas", "scip"],
+            model="xgboost"
+        )
+
+rule WBC_hyperparameter_optimization:
+    input:
+        features="WBC_features.parquet",
+        columns="indices/columns.npy",
+        index="indices/index.npy",
+        labels="labels.parquet"
+    output:
+        "hpo/WBC_{grid}_{type}_{full}_{mask}_{model}.pickle"
+    conda:
+        "environment.yml"
+    threads:
+        10
+    log:
+        "hyperparameter_optimization_{grid}_{type}_{full}_{mask}_{model}.log"
+    conda:
+        "../envs/environment.yml"
+    script:
+        "../scripts/WBC/xgb_parameter_search.py"
 
 rule WBC_classification:
     input:
-        features="features.parquet",
+        features="WBC_features.parquet",
         columns="indices/columns.npy",
         index="indices/index.npy",
         hpo_grid="grid/rsh.pickle"
     output:
-        "models/xgb.pickle"
+        "models/WBC_xgb.pickle"
     conda:
         "../envs/environment.yml"
     log:
