@@ -73,13 +73,11 @@ rule WBC_hyperparameter_optimization:
     output:
         "hpo/WBC_{grid}_{type}_{full}_{mask}_{model}.pickle"
     conda:
-        "environment.yml"
+        "../envs/environment.yml"
     threads:
         10
     log:
         "hyperparameter_optimization_{grid}_{type}_{full}_{mask}_{model}.log"
-    conda:
-        "../envs/environment.yml"
     script:
         "../scripts/WBC/xgb_parameter_search.py"
 
