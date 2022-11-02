@@ -1,0 +1,36 @@
+load:
+  format: tiff
+  channels: [1, 2, 4]
+  channel_names:
+    - DAPI
+    - actin
+    - tubulin
+  kwargs:
+    regex: ^.+\/(?P<plate>.+)\/(?P<id>.+)_w(?P<channel>[0-9]).+$
+project:
+illumination_correction:
+  method: jones_2006
+  key: plate
+  export: false
+  settings:
+    median_filter_size: 125
+    downscale: 4
+segment:
+  method: cellpose
+  settings:
+    cell_diameter:
+    parent_channel_index: 1
+    dapi_channel_index: 0
+    flow_threshold: 0.3
+    substract: true
+      left_index: 1
+      right_index: 0
+      for_channel_index: 2
+  export: false
+mask:
+filter:
+normalization:
+feature_extraction: ["shape", "intensity", "bbox", "texture"]
+export:
+  format: parquet
+  filename: features

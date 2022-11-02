@@ -29,7 +29,7 @@ df = df.loc[numpy.load(snakemake.input.index, allow_pickle=True)]
 if snakemake.wildcards["full"] == "cyto":
     df = df.drop('late', level="meta_fix")
     df = df.drop(2, level="meta_group")
-    
+
 df = df.merge(labels, left_index=True, right_index=True)
 df = df[df["meta_label"] != "unknown"]
 
@@ -97,7 +97,7 @@ if snakemake.wildcards["grid"] == "random":
         verbose=2,
         return_train_score=True,
         random_state=0
-        
+
     )
 else:
     grid = HalvingRandomSearchCV(

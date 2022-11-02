@@ -2,6 +2,10 @@ use rule preprocessing as CD7_preprocessing with:
     output:
         "CD7_features.parquet"
 
+rule CD7:
+    input:
+        "figures/CD7_cluster_annotation.png"
+
 rule CD7_all_clustering:
     input:
         "CD7_adata_0.h5ad", "CD7_adata_1.h5ad"
@@ -20,7 +24,7 @@ rule CD7_clustering:
         notebook="notebooks/clustering_{fillna}.ipynb"
     notebook:
         "../notebooks/CD7/clustering.ipynb"
-        
+
 rule CD7_cluster_annotation:
     input:
         "CD7_adata_0.h5ad"
@@ -33,7 +37,7 @@ rule CD7_cluster_annotation:
         notebook="notebooks/cluster_annotation.ipynb"
     notebook:
         "../notebooks/CD7/cluster_annotation.ipynb"
-        
+
 rule CD7_image_inspection:
     input:
         "Experiment-800.czi"

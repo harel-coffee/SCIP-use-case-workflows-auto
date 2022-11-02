@@ -1,0 +1,52 @@
+load:
+  format: zarr
+  channels: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+  channel_names:
+    - BF1
+    - CD15
+    - Siglec8
+    - CD14
+    - CD19
+    - SSC
+    - CD3
+    - CD45
+    - BF2
+    - CD4
+    - CD56
+    - CD8
+  kwargs:
+    regex: sample(?P<group>[0-9])_?(?P<fix>(early|late))?_part(?P<part>[0-9]).+.zarr$
+segment:
+project:
+illumination_correction:
+mask:
+  combined_indices: [0, 5, 8]
+  main_channel_index: 0
+  filters:
+    - method: 'normaltest'
+      channel_indices: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+      settings:
+  methods:
+    - method: "spot"
+      name: "spot"
+      export: false
+      kwargs:
+        spotsize: 5
+    - method: "li"
+      name: "li"
+      export: false
+      kwargs:
+        smooth: [0, 0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0, 0.5, 0.5, 0.5]
+    - method: "otsu"
+      name: "otsu"
+      export: false
+      kwargs:
+filter:
+normalization:
+feature_extraction:
+  li: ["shape", "intensity", "bbox", "texture", "regions"]
+  otsu: ["shape", "intensity", "bbox", "texture", "regions"]
+  spot: ["shape", "intensity", "regions"]
+export:
+  format: parquet
+  filename: features

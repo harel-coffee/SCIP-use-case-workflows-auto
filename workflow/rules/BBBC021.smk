@@ -2,9 +2,12 @@ use rule preprocessing as BBBC021_preprocessing with:
     output:
         "BBBC021_features.parquet"
 
+rule BBBC021:
+    input: "figures/BBBC021_confusion_matrix.png"
+
 rule BBBC021_moa_prediction:
     input:
-        features="features.parquet",
+        features="BBBC021_features.parquet",
         moa="BBBC021_v1_moa.csv",
         image="BBBC021_v1_image.csv"
     output:

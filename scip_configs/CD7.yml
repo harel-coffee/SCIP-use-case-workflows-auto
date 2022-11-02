@@ -1,0 +1,147 @@
+load:
+  format: czi
+  channels: [0, 1, 2, 3, 4, 5, 6]
+  channel_names:
+    - DAPI
+    - EGFP
+    - RPe
+    - APC
+    - Bright
+    - Oblique
+    - PGC
+  kwargs:
+    regex: ^P(?P<pos>[0-9]+)-(?P<well>.+)$
+    scenes:
+      - P1-D5
+      - P2-D5
+      - P3-D5
+      - P4-D5
+      - P6-D5
+      - P7-D5
+      - P8-D5
+      - P9-D5
+      - P10-D5
+      - P11-D5
+      - P12-D5
+      - P13-D5
+      - P14-D5
+      - P15-D5
+      - P16-D5
+      - P17-D5
+      - P18-D5
+      - P19-D5
+      - P20-D5
+      - P22-D5
+      - P23-D5
+      - P24-D5
+      - P1-D4
+      - P2-D4
+      - P3-D4
+      - P4-D4
+      - P5-D4
+      - P6-D4
+      - P7-D4
+      - P8-D4
+      - P9-D4
+      - P10-D4
+      - P11-D4
+      - P12-D4
+      - P13-D4
+      - P14-D4
+      - P15-D4
+      - P16-D4
+      - P17-D4
+      - P18-D4
+      - P19-D4
+      - P20-D4
+      - P22-D4
+      - P23-D4
+      - P24-D4
+      - P1-D3
+      - P2-D3
+      - P3-D3
+      - P4-D3
+      - P5-D3
+      - P6-D3
+      - P7-D3
+      - P8-D3
+      - P9-D3
+      - P10-D3
+      - P11-D3
+      - P12-D3
+      - P13-D3
+      - P14-D3
+      - P15-D3
+      - P16-D3
+      - P17-D3
+      - P18-D3
+      - P19-D3
+      - P20-D3
+      - P21-D3
+      - P22-D3
+      - P23-D3
+      - P24-D3
+      - P2-D2
+      - P4-D2
+      - P5-D2
+      - P6-D2
+      - P7-D2
+      - P9-D2
+      - P10-D2
+      - P11-D2
+      - P12-D2
+      - P13-D2
+      - P14-D2
+      - P16-D2
+      - P17-D2
+      - P18-D2
+      - P19-D2
+      - P20-D2
+      - P22-D2
+      - P24-D2
+      - P25-D2
+      - P1-D1
+      - P2-D1
+      - P3-D1
+      - P4-D1
+      - P5-D1
+      - P6-D1
+      - P7-D1
+      - P8-D1
+      - P9-D1
+      - P10-D1
+      - P11-D1
+      - P12-D1
+      - P13-D1
+      - P14-D1
+      - P15-D1
+      - P16-D1
+      - P17-D1
+      - P18-D1
+      - P19-D1
+      - P20-D1
+      - P21-D1
+      - P22-D1
+      - P23-D1
+      - P24-D1
+      - P25-D1
+project:
+  method: op
+  settings:
+   op: max
+illumination_correction:
+segment: 
+  method: cellpose
+  settings:
+    cell_diameter:
+    dapi_channel_index: 0
+    parent_channel_index: 5
+    substract:
+  export: true
+mask:
+filter:
+normalization:
+feature_extraction: ["intensity", "shape", "texture", "bbox", "regions"]
+export:
+  format: parquet
+  filename: features
