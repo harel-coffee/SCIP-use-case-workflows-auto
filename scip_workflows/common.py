@@ -4,27 +4,40 @@
 __all__ = []
 
 # %% ../workflow/notebooks/common.ipynb 1
-__all__ = ["pandas", "os", "numpy", "seaborn", 
-"logging", "plt", "cm", "matplotlib", "reload", 
-"Path", "re", "scipy", "CategoricalDtype", "pq"]
+__all__ = [
+    "pandas",
+    "os",
+    "numpy",
+    "seaborn",
+    "logging",
+    "plt",
+    "cm",
+    "matplotlib",
+    "reload",
+    "Path",
+    "re",
+    "scipy",
+    "CategoricalDtype",
+    "pq",
+]
 
-import pandas
-import os
-import numpy
-import seaborn
 import logging
-import matplotlib.pyplot as plt
-from matplotlib import cm
-import matplotlib
+import os
+import re
 from importlib import reload
 from pathlib import Path
-import re
-import scipy
 
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy
+import pandas
+import pyarrow.parquet as pq
+import scipy
+import seaborn
+from matplotlib import cm
 from pandas.api.types import CategoricalDtype
 
-import pyarrow.parquet as pq
-
-plt.rcParams['figure.facecolor'] = 'white'
+plt.rcParams["figure.facecolor"] = "white"
 
 numpy.random.seed(42)
+
