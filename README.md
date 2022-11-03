@@ -16,7 +16,9 @@ via a human-readable language, and can be easily executed in various environment
 
 ## Installation
 
-To execute the workflows in this repository you need to [install Snakemake](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html)
+To execute the workflows in this repository you need to [install Snakemake](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html).
+
+The workflows have been tested with Python 3.9.13.
 
 ## Usage
 
