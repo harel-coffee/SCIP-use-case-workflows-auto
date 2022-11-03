@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+OUTPUT=notebook_html
+
+shopt -s globstar
+for nb in $(ls workflow/notebooks/**/*.ipynb); do
+    rel=$(dirname $(realpath --relative-to=workflow/notebooks "$nb"))
+    path="$OUTPUT/$rel"
+    jupyter nbconvert --to=html --output-dir="$path" $nb
+done
+
+tree -H '.' --noreport --charset utf-8 $OUTPUT > $OUTPUT/index.html
