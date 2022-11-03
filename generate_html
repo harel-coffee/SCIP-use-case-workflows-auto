@@ -3,7 +3,7 @@
 OUTPUT=docs
 
 shopt -s globstar
-for nb in $(git diff --staged --name-only | grep ipynb); do
+for nb in $(git diff --name-only | grep ipynb); do
     rel=$(dirname $(realpath --relative-to=workflow/notebooks "$nb"))
     path="$OUTPUT/$rel"
     jupyter nbconvert --to=html --output-dir="$path" $nb
