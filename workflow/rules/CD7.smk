@@ -4,7 +4,10 @@ use rule preprocessing as CD7_preprocessing with:
 
 rule CD7:
     input:
-        "figures/CD7_cluster_annotation.png"
+        "figures/CD7_cluster_annotation.png",
+        "figures/cd15_vs_cd45_facets.png",
+        "figures/cd15_vs_siglec8_facets.png",
+        "figures/unclassified_cluster.png"
 
 rule CD7_all_clustering:
     input:
@@ -29,7 +32,10 @@ rule CD7_cluster_annotation:
     input:
         "CD7_adata_0.h5ad"
     output:
-        "figures/CD7_cluster_annotation.png"
+        "figures/CD7_cluster_annotation.png",
+        "figures/cd15_vs_cd45_facets.png",
+        "figures/cd15_vs_siglec8_facets.png",
+        "figures/unclassified_cluster.png"
     threads: 1
     conda:
         "../envs/environment.yml"

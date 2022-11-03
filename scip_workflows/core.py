@@ -13,6 +13,7 @@ import yaml
 import zarr
 from aicsimageio import AICSImage
 from matplotlib.colors import LinearSegmentedColormap, Normalize
+import math
 
 from scip.masking import remove_regions_touching_border
 
