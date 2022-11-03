@@ -4,11 +4,11 @@ use rule preprocessing as WBC_preprocessing with:
 
 rule WBC:
     input:
-        - "figures/WBC_scip_full_cv_confmat.png"
-        - "figures/WBC_scip_cyto_cv_confmat.png"
-        - "figures/WBC_scip_full_cv_metrics.png"
-        - "figures/WBC_scip_cyto_cv_metrics.png"
-        - "figures/WBC_ideas_cyto_cv_confmat.png"
+        "figures/WBC_scip_full_cv_confmat.png",
+        "figures/WBC_scip_cyto_cv_confmat.png",
+        "figures/WBC_scip_full_cv_metrics.png",
+        "figures/WBC_scip_cyto_cv_metrics.png",
+        "figures/WBC_ideas_cyto_cv_confmat.png"
 
 rule WBC_labels:
     input:
@@ -86,12 +86,12 @@ rule WBC_scip_classification:
         features="WBC_features.parquet",
         columns="indices/columns.npy",
         index="indices/index.npy",
-        hpo_full="hpo/WBC_rsh_scip_full_li_xgboost.pickle"
+        hpo_full="hpo/WBC_rsh_scip_full_li_xgboost.pickle",
         hpo_cyto="hpo/WBC_rsh_scip_cyto_li_xgboost.pickle"
     output:
-        confmat_full="figures/WBC_scip_full_cv_confmat.png"
-        confmat_cyto="figures/WBC_scip_cyto_cv_confmat.png"
-        metrics_full="figures/WBC_scip_full_cv_metrics.png"
+        confmat_full="figures/WBC_scip_full_cv_confmat.png",
+        confmat_cyto="figures/WBC_scip_cyto_cv_confmat.png",
+        metrics_full="figures/WBC_scip_full_cv_metrics.png",
         metrics_cyto="figures/WBC_scip_cyto_cv_metrics.png"
     threads: 1
     conda:
