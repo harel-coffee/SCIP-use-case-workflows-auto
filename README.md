@@ -1,18 +1,11 @@
 # SCIP use case workflows
 
-This repository contains Snakemake workflows to reproduce use cases presented in
+This repository contains all code to reproduce the use cases presented in
 [A scalable, reproducible and open-source pipeline for morphologically profiling image cytometry data](https://www.biorxiv.org/content/10.1101/2022.10.24.512549v1).
 
-It is built using two frameworks:
-- nbdev
-- Snakemake
-
-nbdev is a framework for developing reusable code in notebooks. Functions are defined and
-tested in notebooks, and exported to a package. This package can be installed and reused in other
-notebooks or scripts.
-
-Snakemake is a workflow framework to create reproducible data analyses. Workflows are defined
-via a human-readable language, and can be easily executed in various environments.
+It contains
+- a package `scip_workflows` created using [nbdev](https://nbdev.fast.ai/),
+- and three [Snakemake](https://snakemake.readthedocs.io/en/stable/) workflows.
 
 ## Installation
 
