@@ -14,7 +14,6 @@ import zarr
 from aicsimageio import AICSImage
 from matplotlib.colors import LinearSegmentedColormap, Normalize
 import math
-
 from scip.masking import remove_regions_touching_border
 
 
@@ -30,7 +29,11 @@ def plot_gate_zarr(
     ncols=5,
     cmaps=None,
     qq=(0, 1),
+    extent=None
 ):
+    
+    compute_extent = extent is None
+    
     df = df.loc[sel]
 
     if len(df) > maxn:
@@ -41,9 +44,11 @@ def plot_gate_zarr(
 
     i = 0
     pixels = [None] * len(df)
-    extent = numpy.full(
-        (df.shape[0], 2, len(channels)), dtype=float, fill_value=numpy.nan
-    )
+    
+    if compute_extent:
+        extent = numpy.full(
+            (df.shape[0], 2, len(channels)), dtype=float, fill_value=numpy.nan
+        )
     for path, gdf in df.groupby("meta_path"):
         z = zarr.open(path, mode="r")
         for (idx, r) in gdf.iterrows():
@@ -59,19 +64,24 @@ def plot_gate_zarr(
                 )
                 pixels_ = pixels_[:, minr:maxr, minc:maxc]
 
-            extent[i, 0] = numpy.quantile(
-                pixels_.reshape(pixels_.shape[0], -1), q=qq[0], axis=1
-            )
-            extent[i, 1] = numpy.quantile(
-                pixels_.reshape(pixels_.shape[0], -1), q=qq[1], axis=1
-            )
+            if compute_extent:
+                extent[i, 0] = numpy.quantile(
+                    pixels_.reshape(pixels_.shape[0], -1), q=qq[0], axis=1
+                )
+                extent[i, 1] = numpy.quantile(
+                    pixels_.reshape(pixels_.shape[0], -1), q=qq[1], axis=1
+                )
 
             pixels[df.index.get_loc(idx)] = pixels_
 
             i += 1
 
-    min_ = extent[:, 0].min(axis=0)
-    max_ = extent[:, 1].max(axis=0)
+    if compute_extent:
+        min_ = extent[:, 0].min(axis=0)
+        max_ = extent[:, 1].max(axis=0)
+    else:
+        min_ = extent[:, 0]
+        max_ = extent[:, 1]
 
     ncols = min(df.shape[0], ncols)
     nrows = int(math.ceil(len(df) / ncols))
@@ -111,7 +121,10 @@ def plot_gate_zarr_channels(
     smooth=0.75,
     channel_ind=[0],
     channel_names=["c"],
+    extent=None
 ):
+    
+    compute_extent = extent is None
 
     dfs = []
     for i, sel in enumerate(selectors):
@@ -131,9 +144,11 @@ def plot_gate_zarr_channels(
 
     images = {}
     masks = {}
-    extent = numpy.empty(shape=(nchannels, 2), dtype=float)
-    extent[:, 0] = numpy.inf
-    extent[:, 1] = -numpy.inf
+    
+    if compute_extent:
+        extent = numpy.empty(shape=(nchannels, 2), dtype=float)
+        extent[:, 0] = numpy.inf
+        extent[:, 1] = -numpy.inf
 
     for path, gdf in df.groupby("meta_path"):
         z = zarr.open(path, mode="r")
@@ -166,20 +181,22 @@ def plot_gate_zarr_channels(
             ]
 
             p = numpy.where(arr, pixels[:, minr:maxr, minc:maxc], numpy.nan)
-            extent[:, 0] = numpy.nanmin(
-                numpy.array(
-                    [extent[:, 0], numpy.nanmin(p.reshape(nchannels, -1), axis=1)]
-                ),
-                axis=0,
-            )
-            extent[:, 1] = numpy.nanmax(
-                numpy.array(
-                    [extent[:, 1], numpy.nanmax(p.reshape(nchannels, -1), axis=1)]
-                ),
-                axis=0,
-            )
+            
+            if compute_extent:
+                extent[:, 0] = numpy.nanmin(
+                    numpy.array(
+                        [extent[:, 0], numpy.nanmin(p.reshape(nchannels, -1), axis=1)]
+                    ),
+                    axis=0,
+                )
+                extent[:, 1] = numpy.nanmax(
+                    numpy.array(
+                        [extent[:, 1], numpy.nanmax(p.reshape(nchannels, -1), axis=1)]
+                    ),
+                    axis=0,
+                )
 
-    fig = plt.figure(dpi=75, figsize=(len(channel_ind) * 2.5, len(df) * 0.8))
+    fig = plt.figure(dpi=75, figsize=(len(channel_ind) * 1, len(df) * 0.8))
     grid = gridspec.GridSpec(1, len(selectors), figure=fig, wspace=0.1)
     cmap = plt.get_cmap("viridis")
     norms = [Normalize(vmin=a, vmax=b) for a, b in extent]
