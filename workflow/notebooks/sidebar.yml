@@ -1,0 +1,37 @@
+website:
+  sidebar:
+    contents:
+      - common.ipynb
+      - section: BBBC021
+        contents:
+          - BBBC021/bbbc_downloading_images.ipynb
+          - BBBC021/bbbc_image_inspection.ipynb
+          - BBBC021/bbbc_selecting_images.ipynb
+          - BBBC021/comparison_to_cellprofiler.ipynb
+          - BBBC021/moa_prediction.ipynb
+          - BBBC021/processing_scip_features.ipynb
+      - section: CD7
+        contents:
+          - CD7/cd7_selecting_cells_of_interest.ipynb
+          - CD7/cluster_annotation.ipynb
+          - CD7/clustering.ipynb
+          - CD7/fluor_clustering.ipynb
+          - CD7/image_inspection.ipynb
+          - CD7/processing_scip_features.ipynb
+          - CD7/qc_paper_figure.ipynb
+          - CD7/quality_control.ipynb
+      - section: WBC
+        contents:
+          - WBC/classification_comparison.ipynb
+          - WBC/feature_comparison.ipynb
+          - WBC/ideas_classification.ipynb
+          - WBC/labels.ipynb
+          - WBC/processing_ideas_features.ipynb
+          - WBC/processing_scip_features.ipynb
+          - WBC/qc_paper_figure.ipynb
+          - WBC/quality_control.ipynb
+          - WBC/scip_classification.ipynb
+      - section: core
+        contents:
+          - core/00_core.ipynb
+          - core/00_threshold_masking.ipynb

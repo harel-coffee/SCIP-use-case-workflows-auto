@@ -155,3 +155,5 @@ config_*.yml
 dist/*
 
 dask-worker-space/
+_docs/
+_proc/

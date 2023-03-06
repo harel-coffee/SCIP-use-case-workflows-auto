@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "SCIP use case workflows"
+  site-url: "https://maximlippeveld.github.io/scip-workflows/"
+  description: ""
+  repo-branch: master
+  repo-url: "https://github.com/mlippeve/ehv/tree/master/"

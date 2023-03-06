@@ -109,7 +109,7 @@ def plot_gate_zarr(
         ax.set_axis_off()
 
 
-# %% ../workflow/notebooks/core/00_core.ipynb 12
+# %% ../workflow/notebooks/core/00_core.ipynb 8
 def plot_gate_zarr_channels(
     selectors,
     df,
@@ -215,7 +215,7 @@ def plot_gate_zarr_channels(
                     ax.set_title(channel_names[j])
 
 
-# %% ../workflow/notebooks/core/00_core.ipynb 13
+# %% ../workflow/notebooks/core/00_core.ipynb 9
 def plot_gate_czi(
     sel, df, maxn=200, sort=None, channels=[0], masks_path_col=None, extent=None
 ):
